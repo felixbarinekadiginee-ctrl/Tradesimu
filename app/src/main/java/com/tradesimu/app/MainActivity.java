@@ -15,23 +15,26 @@ public class MainActivity extends Activity {
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setGravity(Gravity.CENTER);
-        layout.setPadding(30, 30, 30, 30);
+        layout.setPadding(30, 60, 30, 30);
 
         TextView title = new TextView(this);
         title.setText("TradeSim");
         title.setTextSize(32);
         title.setTextColor(Color.BLACK);
-        title.setGravity(Gravity.CENTER);
 
-        TextView subtitle = new TextView(this);
-        subtitle.setText("Virtual Trading Simulator");
-        subtitle.setTextSize(18);
-        subtitle.setGravity(Gravity.CENTER);
-        subtitle.setPadding(0, 20, 0, 0);
+        TextView balanceLabel = new TextView(this);
+        balanceLabel.setText("Virtual Balance");
+        balanceLabel.setTextSize(18);
+        balanceLabel.setPadding(0, 50, 0, 10);
+
+        TextView balance = new TextView(this);
+        balance.setText("$10,000.00");
+        balance.setTextSize(36);
+        balance.setTextColor(Color.rgb(0, 160, 70));
 
         layout.addView(title);
-        layout.addView(subtitle);
+        layout.addView(balanceLabel);
+        layout.addView(balance);
 
         setContentView(layout);
     }
