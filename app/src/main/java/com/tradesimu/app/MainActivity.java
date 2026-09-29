@@ -58,7 +58,13 @@ public class MainActivity extends Activity {
         buyButton.setTextSize(18);
 
         buyButton.setOnClickListener(v -> buyBitcoin());
+Button sellButton = new Button(this);
+sellButton.setText("SELL BTC — 0.01 BTC");
+sellButton.setTextSize(18);
 
+sellButton.setOnClickListener(v -> sellBitcoin());
+
+layout.addView(sellButton);
         layout.addView(buyButton);
 
         addMarket(layout, "ETH/USD", "Ethereum", "$3,412.76", "+1.92%");
@@ -124,3 +130,36 @@ public class MainActivity extends Activity {
         layout.addView(market);
     }
             }
+private void sellBitcoin() {
+
+    double amount = 0.01;
+    double value = btcPrice * amount;
+
+    if (btcOwned >= amount) {
+
+        btcOwned -= amount;
+        balance += value;
+
+        balanceText.setText(
+                "Virtual Balance: $" + String.format("%.2f", balance)
+        );
+
+        holdingsText.setText(
+                "BTC Owned: " + String.format("%.4f", btcOwned) + " BTC"
+        );
+
+        Toast.makeText(
+                this,
+                "Sold 0.01 BTC successfully!",
+                Toast.LENGTH_SHORT
+        ).show();
+
+    } else {
+
+        Toast.makeText(
+                this,
+                "You don't own enough BTC!",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+    }
