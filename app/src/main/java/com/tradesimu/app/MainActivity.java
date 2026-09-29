@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,12 +38,17 @@ public class MainActivity extends Activity {
         subtitle.setTextSize(18);
         subtitle.setTextColor(Color.DKGRAY);
         subtitle.setGravity(Gravity.CENTER);
-        subtitle.setPadding(0, 15, 0, 0);
+        subtitle.setPadding(0, 15, 0, 30);
+
+        Button startButton = new Button(this);
+        startButton.setText("GET STARTED");
+        startButton.setTextSize(18);
 
         layout.addView(logo);
         layout.addView(name);
         layout.addView(subtitle);
+        layout.addView(startButton);
 
         setContentView(layout);
     }
-}
+            }
