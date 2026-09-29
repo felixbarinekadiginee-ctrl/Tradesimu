@@ -3,19 +3,12 @@ package com.tradesimu.app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
-import android.widget.Button;
+import android.graphics.Typeface;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
-
-    double balance = 10000.00;
-    double btcPrice = 63240.32;
-    double btcOwned = 0.0;
-
-    TextView balanceText;
-    TextView holdingsText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,145 +16,33 @@ public class MainActivity extends Activity {
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(30, 50, 30, 30);
+        layout.setGravity(Gravity.CENTER);
+        layout.setPadding(30, 30, 30, 30);
+        layout.setBackgroundColor(Color.WHITE);
 
-        TextView title = new TextView(this);
-        title.setText("TradeSim");
-        title.setTextSize(32);
-        title.setTextColor(Color.BLACK);
+        TextView logo = new TextView(this);
+        logo.setText("📈");
+        logo.setTextSize(70);
+        logo.setGravity(Gravity.CENTER);
 
-        balanceText = new TextView(this);
-        balanceText.setText("Virtual Balance: $" + String.format("%.2f", balance));
-        balanceText.setTextSize(22);
-        balanceText.setTextColor(Color.rgb(0, 160, 70));
+        TextView name = new TextView(this);
+        name.setText("TradeSim");
+        name.setTextSize(40);
+        name.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        name.setTextColor(Color.rgb(20, 90, 60));
+        name.setGravity(Gravity.CENTER);
 
-        holdingsText = new TextView(this);
-        holdingsText.setText("BTC Owned: 0.0000 BTC");
-        holdingsText.setTextSize(18);
-        holdingsText.setPadding(0, 15, 0, 25);
+        TextView subtitle = new TextView(this);
+        subtitle.setText("Learn • Practice • Trade");
+        subtitle.setTextSize(18);
+        subtitle.setTextColor(Color.DKGRAY);
+        subtitle.setGravity(Gravity.CENTER);
+        subtitle.setPadding(0, 15, 0, 0);
 
-        TextView markets = new TextView(this);
-        markets.setText("Markets");
-        markets.setTextSize(24);
-
-        layout.addView(title);
-        layout.addView(balanceText);
-        layout.addView(holdingsText);
-        layout.addView(markets);
-
-        addMarket(layout, "BTC/USD", "Bitcoin", "$63,240.32", "+2.48%");
-
-        Button buyButton = new Button(this);
-        buyButton.setText("BUY BTC — 0.01 BTC");
-        buyButton.setTextSize(18);
-        buyButton.setOnClickListener(v -> buyBitcoin());
-        layout.addView(buyButton);
-
-        Button sellButton = new Button(this);
-        sellButton.setText("SELL BTC — 0.01 BTC");
-        sellButton.setTextSize(18);
-        sellButton.setOnClickListener(v -> sellBitcoin());
-        layout.addView(sellButton);
-
-        addMarket(layout, "ETH/USD", "Ethereum", "$3,412.76", "+1.92%");
-        addMarket(layout, "AAPL", "Apple Inc.", "$227.48", "+0.85%");
-        addMarket(layout, "TSLA", "Tesla Inc.", "$248.17", "-1.23%");
+        layout.addView(logo);
+        layout.addView(name);
+        layout.addView(subtitle);
 
         setContentView(layout);
     }
-
-    private void buyBitcoin() {
-
-        double amount = 0.01;
-        double cost = btcPrice * amount;
-
-        if (balance >= cost) {
-
-            balance -= cost;
-            btcOwned += amount;
-
-            balanceText.setText(
-                    "Virtual Balance: $" + String.format("%.2f", balance)
-            );
-
-            holdingsText.setText(
-                    "BTC Owned: " + String.format("%.4f", btcOwned) + " BTC"
-            );
-
-            Toast.makeText(
-                    this,
-                    "Bought 0.01 BTC successfully!",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-        } else {
-
-            Toast.makeText(
-                    this,
-                    "Not enough virtual balance!",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
-    }
-
-    private void sellBitcoin() {
-
-        double amount = 0.01;
-        double value = btcPrice * amount;
-
-        if (btcOwned >= amount) {
-
-            btcOwned -= amount;
-            balance += value;
-
-            balanceText.setText(
-                    "Virtual Balance: $" + String.format("%.2f", balance)
-            );
-
-            holdingsText.setText(
-                    "BTC Owned: " + String.format("%.4f", btcOwned) + " BTC"
-            );
-
-            Toast.makeText(
-                    this,
-                    "Sold 0.01 BTC successfully!",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-        } else {
-
-            Toast.makeText(
-                    this,
-                    "You don't own enough BTC!",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
-    }
-
-    private void addMarket(
-            LinearLayout layout,
-            String name,
-            String description,
-            String price,
-            String change) {
-
-        TextView market = new TextView(this);
-
-        market.setText(
-                name + "\n" +
-                description + "\n" +
-                price + "   " + change
-        );
-
-        market.setTextSize(19);
-        market.setPadding(20, 20, 20, 20);
-
-        if (change.startsWith("-")) {
-            market.setTextColor(Color.RED);
-        } else {
-            market.setTextColor(Color.rgb(0, 150, 70));
-        }
-
-        layout.addView(market);
-    }
-            }
+}
