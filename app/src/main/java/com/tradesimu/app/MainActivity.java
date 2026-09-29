@@ -56,8 +56,10 @@ public class MainActivity extends Activity {
         Button buyButton = new Button(this);
         buyButton.setText("BUY BTC — 0.01 BTC");
         buyButton.setTextSize(18);
+buyButton.setOnClickListener(v -> buyBitcoin());
 
-        buyButton.setOnClickListener(v -> buyBitcoin());
+layout.addView(buyButton);
+
 Button sellButton = new Button(this);
 sellButton.setText("SELL BTC — 0.01 BTC");
 sellButton.setTextSize(18);
@@ -65,7 +67,6 @@ sellButton.setTextSize(18);
 sellButton.setOnClickListener(v -> sellBitcoin());
 
 layout.addView(sellButton);
-        layout.addView(buyButton);
 
         addMarket(layout, "ETH/USD", "Ethereum", "$3,412.76", "+1.92%");
         addMarket(layout, "AAPL", "Apple Inc.", "$227.48", "+0.85%");
