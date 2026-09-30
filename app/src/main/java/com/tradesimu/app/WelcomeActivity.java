@@ -42,10 +42,8 @@ public class WelcomeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
 
-        // Google Sign-In setup
         GoogleSignInOptions gso =
                 new GoogleSignInOptions.Builder(
                         GoogleSignInOptions.DEFAULT_SIGN_IN
@@ -231,7 +229,7 @@ public class WelcomeActivity extends Activity {
                             Toast.LENGTH_SHORT
                     ).show();
 
-                    openDashboard();
+                    openIntroduction();
 
                 } else {
 
@@ -246,10 +244,8 @@ public class WelcomeActivity extends Activity {
             });
         });
 
-        // Google divider
         addGoogleDivider();
 
-        // Google button
         Button googleButton =
                 googleButton("Continue with Google");
 
@@ -423,7 +419,7 @@ public class WelcomeActivity extends Activity {
                             Toast.LENGTH_SHORT
                     ).show();
 
-                    openDashboard();
+                    openIntroduction();
 
                 } else {
 
@@ -438,10 +434,8 @@ public class WelcomeActivity extends Activity {
             });
         });
 
-        // Google divider
         addGoogleDivider();
 
-        // Google button
         Button googleButton =
                 googleButton("Continue with Google");
 
@@ -539,7 +533,7 @@ public class WelcomeActivity extends Activity {
                                         Toast.LENGTH_SHORT
                                 ).show();
 
-                                openDashboard();
+                                openIntroduction();
 
                             } else {
 
@@ -566,12 +560,16 @@ public class WelcomeActivity extends Activity {
         }
     }
 
-    private void openDashboard() {
+    // =========================
+    // OPEN INTRODUCTION
+    // =========================
+
+    private void openIntroduction() {
 
         Intent intent =
                 new Intent(
                         WelcomeActivity.this,
-                        MainActivity.class
+                        IntroductionActivity.class
                 );
 
         startActivity(intent);
@@ -1107,4 +1105,4 @@ public class WelcomeActivity extends Activity {
             }
         }
     }
-            }
+                                    }
