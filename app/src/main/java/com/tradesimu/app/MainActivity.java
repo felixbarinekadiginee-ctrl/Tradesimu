@@ -53,31 +53,21 @@ public class MainActivity extends Activity {
         balanceBg.setCornerRadius(28);
         balance.setBackground(balanceBg);
 
-        TextView balanceTitle =
-                text("VIRTUAL BALANCE", 13, Color.WHITE);
+        balance.addView(text("VIRTUAL BALANCE", 13, Color.WHITE));
 
-        TextView balanceAmount =
-                text("$10,000.00", 30, Color.WHITE);
-
-        balanceAmount.setTypeface(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-        );
-
-        TextView profit =
-                text("+$0.00  (0.00%)", 15, Color.WHITE);
-
-        balance.addView(balanceTitle);
+        TextView balanceAmount = text("$10,000.00", 30, Color.WHITE);
+        balanceAmount.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         balance.addView(balanceAmount);
-        balance.addView(profit);
 
-        LinearLayout.LayoutParams balanceParams =
+        balance.addView(text("+$0.00  (0.00%)", 15, Color.WHITE));
+
+        main.addView(
+                balance,
                 new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-        main.addView(balance, balanceParams);
+                )
+        );
 
         // QUICK ACTIONS
         TextView quick = text("Quick Actions", 21, DARK);
@@ -104,28 +94,14 @@ public class MainActivity extends Activity {
 
         // MARKETS
         TextView marketTitle = text("Markets", 22, DARK);
-        marketTitle.setTypeface(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-        );
+        marketTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         marketTitle.setPadding(0, 22, 0, 10);
         main.addView(marketTitle);
 
-        main.addView(
-                market("BTC/USD", "$63,240.32", "+2.41%")
-        );
-
-        main.addView(
-                market("ETH/USD", "$3,420.18", "+1.87%")
-        );
-
-        main.addView(
-                market("AAPL", "$227.16", "+0.92%")
-        );
-
-        main.addView(
-                market("TSLA", "$258.12", "-0.64%")
-        );
+        main.addView(market("BTC/USD", "$63,240.32", "+2.41%"));
+        main.addView(market("ETH/USD", "$3,420.18", "+1.87%"));
+        main.addView(market("AAPL", "$227.16", "+0.92%"));
+        main.addView(market("TSLA", "$258.12", "-0.64%"));
 
         // START PRACTICING
         Button start = new Button(this);
@@ -133,27 +109,27 @@ public class MainActivity extends Activity {
         start.setText("START PRACTICING");
         start.setTextSize(17);
         start.setTextColor(Color.WHITE);
-        start.setTypeface(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-        );
+        start.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         start.setGravity(Gravity.CENTER);
         start.setAllCaps(false);
+
+        // Give the button enough room for Android's internal padding.
+        start.setMinHeight(80);
+        start.setMinimumHeight(80);
+        start.setPadding(12, 12, 12, 12);
 
         GradientDrawable startBg = new GradientDrawable();
         startBg.setColor(GREEN);
         startBg.setCornerRadius(35);
-
         start.setBackground(startBg);
 
         LinearLayout.LayoutParams startParams =
                 new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        64
+                        80
                 );
 
         startParams.setMargins(0, 18, 0, 12);
-
         main.addView(start, startParams);
 
         start.setOnClickListener(v -> openChart());
@@ -167,6 +143,7 @@ public class MainActivity extends Activity {
 
         note.setGravity(Gravity.CENTER);
         note.setPadding(10, 8, 10, 10);
+        note.setIncludeFontPadding(true);
 
         main.addView(note);
 
@@ -195,6 +172,9 @@ public class MainActivity extends Activity {
         t.setTextSize(size);
         t.setTextColor(color);
 
+        // Keep the full top and bottom of the letters visible.
+        t.setIncludeFontPadding(true);
+
         return t;
     }
 
@@ -208,6 +188,14 @@ public class MainActivity extends Activity {
         b.setAllCaps(false);
         b.setGravity(Gravity.CENTER);
 
+        // IMPORTANT:
+        // The old height of 75 was too small.
+        // 100 gives the two-line buttons enough vertical space.
+        b.setMinHeight(100);
+        b.setMinimumHeight(100);
+
+        b.setPadding(4, 10, 4, 10);
+
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(Color.WHITE);
         bg.setCornerRadius(22);
@@ -217,7 +205,7 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams p =
                 new LinearLayout.LayoutParams(
                         0,
-                        75,
+                        100,
                         1
                 );
 
@@ -236,10 +224,7 @@ public class MainActivity extends Activity {
 
         LinearLayout m = new LinearLayout(this);
 
-        m.setOrientation(
-                LinearLayout.VERTICAL
-        );
-
+        m.setOrientation(LinearLayout.VERTICAL);
         m.setPadding(18, 12, 18, 12);
 
         GradientDrawable bg = new GradientDrawable();
@@ -258,27 +243,11 @@ public class MainActivity extends Activity {
 
         m.setLayoutParams(p);
 
-        TextView n = text(
-                name,
-                17,
-                DARK
-        );
+        TextView n = text(name, 17, DARK);
+        n.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
 
-        n.setTypeface(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-        );
-
-        TextView pr = text(
-                price,
-                16,
-                DARK
-        );
-
-        pr.setTypeface(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-        );
+        TextView pr = text(price, 16, DARK);
+        pr.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
 
         TextView ch = text(
                 change,
