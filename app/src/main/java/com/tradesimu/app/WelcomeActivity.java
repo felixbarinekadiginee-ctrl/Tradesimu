@@ -2,98 +2,629 @@ package com.tradesimu.app;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.*;
 import android.graphics.drawable.GradientDrawable;
-import android.view.Gravity;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.view.*;
+import android.view.animation.*;
+import android.widget.*;
+import android.text.InputType;
+import android.content.Context;
 
 public class WelcomeActivity extends Activity {
 
-    private final int GREEN = Color.rgb(0, 180, 100);
-    private final int DARK = Color.rgb(20, 25, 30);
-    private final int LIGHT = Color.rgb(245, 248, 247);
+    private final int GREEN = Color.rgb(0, 220, 120);
+    private final int DARK_GREEN = Color.rgb(3, 25, 18);
+    private final int BLACK_GREEN = Color.rgb(2, 12, 9);
+    private final int WHITE = Color.WHITE;
+
+    private FrameLayout root;
+    private LinearLayout content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LinearLayout main = new LinearLayout(this);
-        main.setOrientation(LinearLayout.VERTICAL);
-        main.setGravity(Gravity.CENTER);
-        main.setPadding(30, 40, 30, 40);
-        main.setBackgroundColor(LIGHT);
+        showWelcome();
+    }
 
-        TextView logo = new TextView(this);
-        logo.setText("TradeSim");
-        logo.setTextSize(38);
-        logo.setTextColor(GREEN);
-        logo.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        logo.setGravity(Gravity.CENTER);
-        main.addView(logo);
+    // =========================
+    // WELCOME SCREEN
+    // =========================
 
-        TextView title = new TextView(this);
-        title.setText("Welcome to TradeSim");
-        title.setTextSize(28);
-        title.setTextColor(DARK);
+    private void showWelcome() {
+
+        root = createBackground();
+
+        content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER);
+        content.setPadding(dp(28), dp(30), dp(28), dp(30));
+
+        root.addView(content, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+
+        ImageView logo = new ImageView(this);
+        logo.setImageResource(R.drawable.tradesim_logo);
+        logo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        LinearLayout.LayoutParams logoParams =
+                new LinearLayout.LayoutParams(dp(145), dp(145));
+        logoParams.setMargins(0, 0, 0, dp(15));
+
+        content.addView(logo, logoParams);
+
+        animateLogo(logo);
+
+        TextView title = text("Welcome to TradeSim", 30, WHITE);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         title.setGravity(Gravity.CENTER);
-        title.setIncludeFontPadding(true);
-        title.setPadding(10, 35, 10, 15);
-        main.addView(title);
 
-        TextView description = new TextView(this);
-        description.setText(
-                "Learn how trading works, practice with virtual money, " +
-                "and build your trading skills without risking real money."
+        content.addView(title);
+
+        TextView subtitle = text(
+                "Learn. Practice. Trade.",
+                17,
+                Color.rgb(190, 235, 215)
         );
-        description.setTextSize(17);
-        description.setTextColor(Color.DKGRAY);
-        description.setGravity(Gravity.CENTER);
-        description.setLineSpacing(6, 1.0f);
-        description.setIncludeFontPadding(true);
-        description.setPadding(20, 5, 20, 35);
-        main.addView(description);
+        subtitle.setGravity(Gravity.CENTER);
+        subtitle.setPadding(0, dp(8), 0, dp(35));
 
-        Button login = createButton("Log In", GREEN);
-        main.addView(login);
+        content.addView(subtitle);
 
-        Button signup = createButton("Sign Up", DARK);
-        main.addView(signup);
+        Button signIn = greenButton("Sign In");
 
-        setContentView(main);
+        Button signUp = outlineButton("Sign Up");
+
+        content.addView(signIn, buttonParams());
+        content.addView(signUp, buttonParams());
+
+        signIn.setOnClickListener(v -> showLogin());
+        signUp.setOnClickListener(v -> showSignUp());
+
+        setContentView(root);
     }
 
-    private Button createButton(String text, int color) {
+    // =========================
+    // LOGIN SCREEN
+    // =========================
 
-        Button button = new Button(this);
+    private void showLogin() {
 
-        button.setText(text);
-        button.setTextSize(17);
-        button.setTextColor(Color.WHITE);
-        button.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        button.setGravity(Gravity.CENTER);
-        button.setAllCaps(false);
-        button.setIncludeFontPadding(true);
-        button.setPadding(12, 12, 12, 12);
+        root = createBackground();
 
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(color);
-        background.setCornerRadius(35);
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
 
-        button.setBackground(background);
+        content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER_HORIZONTAL);
+        content.setPadding(dp(28), dp(45), dp(28), dp(30));
 
-        LinearLayout.LayoutParams params =
+        scroll.addView(content);
+
+        root.addView(scroll, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+
+        TextView back = text("← Back", 17, Color.rgb(180, 240, 210));
+        back.setGravity(Gravity.LEFT);
+        back.setPadding(0, 0, 0, dp(25));
+
+        content.addView(back,
                 new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        75
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                ));
+
+        back.setOnClickListener(v -> showWelcome());
+
+        ImageView logo = new ImageView(this);
+        logo.setImageResource(R.drawable.tradesim_logo);
+        logo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        content.addView(logo,
+                new LinearLayout.LayoutParams(dp(90), dp(90)));
+
+        animateLogo(logo);
+
+        TextView title = text("Sign In", 30, WHITE);
+        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        title.setGravity(Gravity.CENTER);
+
+        content.addView(title);
+
+        TextView subtitle = text(
+                "Welcome back to TradeSim",
+                16,
+                Color.rgb(185, 225, 205)
+        );
+        subtitle.setGravity(Gravity.CENTER);
+        subtitle.setPadding(0, dp(7), 0, dp(25));
+
+        content.addView(subtitle);
+
+        EditText email = input("Email");
+
+        EditText password = input("Password");
+        password.setInputType(
+                InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_VARIATION_PASSWORD
+        );
+
+        content.addView(email, inputParams());
+        content.addView(password, inputParams());
+
+        Button login = greenButton("Sign In");
+
+        content.addView(login, buttonParams());
+
+        login.setOnClickListener(v -> {
+
+            String emailText = email.getText().toString().trim();
+            String passwordText = password.getText().toString();
+
+            if (emailText.isEmpty()) {
+                email.setError("Enter your email");
+                email.requestFocus();
+                return;
+            }
+
+            if (passwordText.isEmpty()) {
+                password.setError("Enter your password");
+                password.requestFocus();
+                return;
+            }
+
+            Toast.makeText(
+                    this,
+                    "Sign In is ready. Firebase will be connected next.",
+                    Toast.LENGTH_SHORT
+            ).show();
+        });
+
+        TextView create = text(
+                "Don't have an account?  Sign Up",
+                15,
+                Color.rgb(190, 240, 215)
+        );
+        create.setGravity(Gravity.CENTER);
+        create.setPadding(0, dp(18), 0, dp(10));
+
+        content.addView(create);
+
+        create.setOnClickListener(v -> showSignUp());
+
+        setContentView(root);
+    }
+
+    // =========================
+    // SIGN UP SCREEN
+    // =========================
+
+    private void showSignUp() {
+
+        root = createBackground();
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+
+        content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER_HORIZONTAL);
+        content.setPadding(dp(28), dp(45), dp(28), dp(30));
+
+        scroll.addView(content);
+
+        root.addView(scroll, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+
+        TextView back = text("← Back", 17, Color.rgb(180, 240, 210));
+        back.setPadding(0, 0, 0, dp(25));
+
+        content.addView(back,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                ));
+
+        back.setOnClickListener(v -> showWelcome());
+
+        ImageView logo = new ImageView(this);
+        logo.setImageResource(R.drawable.tradesim_logo);
+        logo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        content.addView(logo,
+                new LinearLayout.LayoutParams(dp(90), dp(90)));
+
+        animateLogo(logo);
+
+        TextView title = text("Create Your Account", 28, WHITE);
+        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        title.setGravity(Gravity.CENTER);
+
+        content.addView(title);
+
+        TextView subtitle = text(
+                "Start practicing with virtual money",
+                16,
+                Color.rgb(185, 225, 205)
+        );
+        subtitle.setGravity(Gravity.CENTER);
+        subtitle.setPadding(0, dp(7), 0, dp(25));
+
+        content.addView(subtitle);
+
+        EditText name = input("Full Name");
+
+        EditText email = input("Email");
+
+        EditText password = input("Password");
+        password.setInputType(
+                InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_VARIATION_PASSWORD
+        );
+
+        EditText confirm = input("Confirm Password");
+        confirm.setInputType(
+                InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_VARIATION_PASSWORD
+        );
+
+        content.addView(name, inputParams());
+        content.addView(email, inputParams());
+        content.addView(password, inputParams());
+        content.addView(confirm, inputParams());
+
+        Button signUp = greenButton("Create Account");
+
+        content.addView(signUp, buttonParams());
+
+        signUp.setOnClickListener(v -> {
+
+            if (name.getText().toString().trim().isEmpty()) {
+                name.setError("Enter your name");
+                name.requestFocus();
+                return;
+            }
+
+            if (email.getText().toString().trim().isEmpty()) {
+                email.setError("Enter your email");
+                email.requestFocus();
+                return;
+            }
+
+            if (password.getText().toString().isEmpty()) {
+                password.setError("Create a password");
+                password.requestFocus();
+                return;
+            }
+
+            if (!password.getText().toString()
+                    .equals(confirm.getText().toString())) {
+
+                confirm.setError("Passwords do not match");
+                confirm.requestFocus();
+                return;
+            }
+
+            Toast.makeText(
+                    this,
+                    "Account screen is ready. Firebase will be connected next.",
+                    Toast.LENGTH_SHORT
+            ).show();
+        });
+
+        TextView login = text(
+                "Already have an account?  Sign In",
+                15,
+                Color.rgb(190, 240, 215)
+        );
+        login.setGravity(Gravity.CENTER);
+        login.setPadding(0, dp(18), 0, dp(10));
+
+        content.addView(login);
+
+        login.setOnClickListener(v -> showLogin());
+
+        setContentView(root);
+    }
+
+    // =========================
+    // ANIMATED BACKGROUND
+    // =========================
+
+    private FrameLayout createBackground() {
+
+        FrameLayout frame = new FrameLayout(this);
+
+        GradientDrawable gradient = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[]{
+                        BLACK_GREEN,
+                        DARK_GREEN,
+                        Color.rgb(0, 45, 28),
+                        BLACK_GREEN
+                }
+        );
+
+        frame.setBackground(gradient);
+
+        TradingBackground chart = new TradingBackground(this);
+
+        frame.addView(chart,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                ));
+
+        return frame;
+    }
+
+    // =========================
+    // ANIMATIONS
+    // =========================
+
+    private void animateLogo(View logo) {
+
+        logo.setAlpha(0f);
+        logo.setScaleX(0.7f);
+        logo.setScaleY(0.7f);
+
+        logo.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(900)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+
+        ObjectAnimator pulseX =
+                ObjectAnimator.ofFloat(logo, "scaleX", 1f, 1.06f, 1f);
+
+        ObjectAnimator pulseY =
+                ObjectAnimator.ofFloat(logo, "scaleY", 1f, 1.06f, 1f);
+
+        pulseX.setDuration(2200);
+        pulseY.setDuration(2200);
+
+        pulseX.setRepeatCount(Animation.INFINITE);
+        pulseY.setRepeatCount(Animation.INFINITE);
+
+        pulseX.start();
+        pulseY.start();
+    }
+
+    // =========================
+    // UI HELPERS
+    // =========================
+
+    private TextView text(String value, float size, int color) {
+
+        TextView t = new TextView(this);
+
+        t.setText(value);
+        t.setTextSize(size);
+        t.setTextColor(color);
+        t.setIncludeFontPadding(true);
+
+        return t;
+    }
+
+    private EditText input(String hint) {
+
+        EditText e = new EditText(this);
+
+        e.setHint(hint);
+        e.setHintTextColor(Color.rgb(150, 190, 170));
+        e.setTextColor(Color.WHITE);
+        e.setTextSize(16);
+        e.setSingleLine(true);
+        e.setPadding(dp(18), dp(12), dp(18), dp(12));
+
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(Color.argb(80, 0, 70, 45));
+        background.setCornerRadius(dp(16));
+        background.setStroke(dp(1), Color.argb(130, 0, 220, 120));
+
+        e.setBackground(background);
+
+        return e;
+    }
+
+    private LinearLayout.LayoutParams inputParams() {
+
+        LinearLayout.LayoutParams p =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(58)
                 );
 
-        params.setMargins(10, 8, 10, 8);
-        button.setLayoutParams(params);
+        p.setMargins(0, 0, 0, dp(13));
 
-        return button;
+        return p;
     }
+
+    private Button greenButton(String value) {
+
+        Button b = new Button(this);
+
+        b.setText(value);
+        b.setTextSize(17);
+        b.setTextColor(Color.BLACK);
+        b.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        b.setAllCaps(false);
+        b.setGravity(Gravity.CENTER);
+        b.setIncludeFontPadding(true);
+        b.setMinHeight(dp(56));
+        b.setPadding(dp(15), dp(8), dp(15), dp(8));
+
+        GradientDrawable bg = new GradientDrawable();
+
+        bg.setColor(GREEN);
+        bg.setCornerRadius(dp(30));
+
+        b.setBackground(bg);
+
+        return b;
     }
+
+    private Button outlineButton(String value) {
+
+        Button b = new Button(this);
+
+        b.setText(value);
+        b.setTextSize(17);
+        b.setTextColor(GREEN);
+        b.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        b.setAllCaps(false);
+        b.setGravity(Gravity.CENTER);
+        b.setIncludeFontPadding(true);
+        b.setMinHeight(dp(56));
+        b.setPadding(dp(15), dp(8), dp(15), dp(8));
+
+        GradientDrawable bg = new GradientDrawable();
+
+        bg.setColor(Color.argb(35, 0, 220, 120));
+        bg.setCornerRadius(dp(30));
+        bg.setStroke(dp(2), GREEN);
+
+        b.setBackground(bg);
+
+        return b;
+    }
+
+    private LinearLayout.LayoutParams buttonParams() {
+
+        LinearLayout.LayoutParams p =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(58)
+                );
+
+        p.setMargins(0, 0, 0, dp(14));
+
+        return p;
+    }
+
+    private int dp(int value) {
+
+        return (int) (
+                value *
+                getResources()
+                        .getDisplayMetrics()
+                        .density
+                + 0.5f
+        );
+    }
+
+    // =========================
+    // ANIMATED TRADING CHART
+    // =========================
+
+    private static class TradingBackground extends View {
+
+        private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        private float offset = 0;
+
+        private Path path = new Path();
+
+        public TradingBackground(Context context) {
+
+            super(context);
+
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(3);
+            paint.setColor(Color.argb(55, 0, 255, 130));
+
+            animateChart();
+        }
+
+        private void animateChart() {
+
+            ValueAnimator animator =
+                    ValueAnimator.ofFloat(0, 1000);
+
+            animator.setDuration(8000);
+            animator.setRepeatCount(ValueAnimator.INFINITE);
+            animator.setInterpolator(new LinearInterpolator());
+
+            animator.addUpdateListener(animation -> {
+
+                offset = (float) animation.getAnimatedValue();
+
+                invalidate();
+            });
+
+            animator.start();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+
+            super.onDraw(canvas);
+
+            float width = getWidth();
+            float height = getHeight();
+
+            path.reset();
+
+            float startX = -200 + (offset % 200);
+
+            path.moveTo(startX, height * 0.72f);
+
+            for (int i = 0; i < 14; i++) {
+
+                float x = startX + i * (width / 8f);
+
+                float y =
+                        height * 0.72f
+                        - (float)
+                        Math.sin(i * 0.9 + offset * 0.01)
+                        * height * 0.08f
+                        - i * height * 0.018f;
+
+                if (i == 0) {
+                    path.moveTo(x, y);
+                } else {
+                    path.lineTo(x, y);
+                }
+            }
+
+            canvas.drawPath(path, paint);
+
+            paint.setStrokeWidth(1);
+
+            for (int i = 1; i < 7; i++) {
+
+                float y = height * i / 7f;
+
+                canvas.drawLine(
+                        0,
+                        y,
+                        width,
+                        y,
+                        paint
+                );
+            }
+
+            for (int i = 1; i < 5; i++) {
+
+                float x = width * i / 5f;
+
+                canvas.drawLine(
+                        x,
+                        0,
+                        x,
+                        height,
+                        paint
+                );
+            }
+        }
+    }
+                     }
