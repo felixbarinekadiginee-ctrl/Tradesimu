@@ -1,6 +1,7 @@
 package com.tradesimu.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -45,7 +46,7 @@ public class MainActivity extends Activity {
         header.setGravity(Gravity.CENTER_VERTICAL);
 
         ImageView logo = new ImageView(this);
-        logo.setImageResource(com.tradesimu.app.R.drawable.tradesim_logo);
+        logo.setImageResource(R.drawable.tradesim_logo);
         logo.setAdjustViewBounds(true);
 
         LinearLayout.LayoutParams logoParams =
@@ -147,6 +148,11 @@ public class MainActivity extends Activity {
 
         main.addView(quickRow);
 
+        // CHART BUTTON OPENS CHART SCREEN
+        chartButton.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ChartActivity.class));
+        });
+
         // MARKETS
         TextView marketTitle = new TextView(this);
         marketTitle.setText("Markets");
@@ -190,140 +196,3 @@ public class MainActivity extends Activity {
         ));
 
         horizontalScroll.addView(markets);
-        main.addView(horizontalScroll);
-
-        // START PRACTICING BUTTON
-        Button startTrading = new Button(this);
-        startTrading.setText("START PRACTICING");
-        startTrading.setTextSize(17);
-        startTrading.setTextColor(Color.WHITE);
-        startTrading.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        startTrading.setAllCaps(false);
-        startTrading.setGravity(Gravity.CENTER);
-        startTrading.setMinHeight(70);
-        startTrading.setMinimumHeight(70);
-        startTrading.setPadding(20, 15, 20, 15);
-
-        GradientDrawable tradingBackground = new GradientDrawable();
-        tradingBackground.setColor(GREEN);
-        tradingBackground.setCornerRadius(35);
-
-        startTrading.setBackground(tradingBackground);
-
-        LinearLayout.LayoutParams tradingParams =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-        tradingParams.setMargins(0, 25, 0, 0);
-
-        main.addView(startTrading, tradingParams);
-
-        animateButton(startTrading);
-
-        // EDUCATIONAL MESSAGE
-        TextView message = new TextView(this);
-        message.setText(
-                "💡 Practice with virtual money and learn trading without risking real money."
-        );
-        message.setTextSize(15);
-        message.setTextColor(Color.DKGRAY);
-        message.setGravity(Gravity.CENTER);
-        message.setLineSpacing(3, 1.0f);
-        message.setPadding(10, 20, 10, 5);
-
-        main.addView(message);
-
-        scrollView.addView(main);
-        setContentView(scrollView);
-
-        animateLogo(logo);
-    }
-
-    private Button createActionButton(String text) {
-
-        Button button = new Button(this);
-
-        button.setText(text);
-        button.setTextSize(12);
-        button.setTextColor(DARK);
-        button.setAllCaps(false);
-        button.setGravity(Gravity.CENTER);
-        button.setPadding(2, 4, 2, 4);
-        button.setMinHeight(0);
-        button.setMinimumHeight(0);
-
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.WHITE);
-        background.setCornerRadius(22);
-
-        button.setBackground(background);
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        0,
-                        82,
-                        1
-                );
-
-        params.setMargins(3, 3, 3, 3);
-
-        button.setLayoutParams(params);
-
-        animateButton(button);
-
-        return button;
-    }
-
-    private LinearLayout createMarketCard(
-            String name,
-            String price,
-            String change) {
-
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setPadding(18, 15, 18, 15);
-
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.WHITE);
-        background.setCornerRadius(23);
-
-        card.setBackground(background);
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        190,
-                        135
-                );
-
-        params.setMargins(0, 0, 10, 0);
-
-        card.setLayoutParams(params);
-
-        TextView marketName = new TextView(this);
-        marketName.setText(name);
-        marketName.setTextSize(17);
-        marketName.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        marketName.setTextColor(DARK);
-
-        TextView marketPrice = new TextView(this);
-        marketPrice.setText(price);
-        marketPrice.setTextSize(17);
-        marketPrice.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        marketPrice.setTextColor(DARK);
-        marketPrice.setPadding(0, 7, 0, 4);
-
-        TextView marketChange = new TextView(this);
-        marketChange.setText(change);
-        marketChange.setTextSize(14);
-
-        if (change.startsWith("+")) {
-            marketChange.setTextColor(GREEN);
-        } else {
-            marketChange.setTextColor(Color.RED);
-        }
-
-        card.addView(marketName);
-        card.addView(marketPrice);
