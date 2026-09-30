@@ -11,6 +11,17 @@ import android.animation.ValueAnimator;
 import android.widget.*;
 import android.text.InputType;
 import android.content.Context;
+import android.content.Intent;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.android.gms.tasks.Task;
 
 public class WelcomeActivity extends Activity {
 
@@ -22,9 +33,34 @@ public class WelcomeActivity extends Activity {
     private FrameLayout root;
     private LinearLayout content;
 
+    private FirebaseAuth mAuth;
+    private GoogleSignInClient googleSignInClient;
+
+    private static final int RC_GOOGLE_SIGN_IN = 9001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Firebase Authentication
+        mAuth = FirebaseAuth.getInstance();
+
+        // Google Sign-In setup
+        GoogleSignInOptions gso =
+                new GoogleSignInOptions.Builder(
+                        GoogleSignInOptions.DEFAULT_SIGN_IN
+                )
+                        .requestIdToken(
+                                getString(
+                                        com.tradesimu.app.R.string.default_web_client_id
+                                )
+                        )
+                        .requestEmail()
+                        .build();
+
+        googleSignInClient =
+                GoogleSignIn.getClient(this, gso);
+
         showWelcome();
     }
 
@@ -108,7 +144,12 @@ public class WelcomeActivity extends Activity {
                 FrameLayout.LayoutParams.MATCH_PARENT
         ));
 
-        TextView back = text("← Back", 17, Color.rgb(180, 240, 210));
+        TextView back = text(
+                "← Back",
+                17,
+                Color.rgb(180, 240, 210)
+        );
+
         back.setPadding(0, 0, 0, dp(25));
 
         content.addView(back,
@@ -159,8 +200,11 @@ public class WelcomeActivity extends Activity {
 
         login.setOnClickListener(v -> {
 
-            String emailText = email.getText().toString().trim();
-            String passwordText = password.getText().toString();
+            String emailText =
+                    email.getText().toString().trim();
+
+            String passwordText =
+                    password.getText().toString();
 
             if (emailText.isEmpty()) {
                 email.setError("Enter your email");
@@ -174,12 +218,49 @@ public class WelcomeActivity extends Activity {
                 return;
             }
 
-            Toast.makeText(
-                    this,
-                    "Sign In is ready. Firebase will be connected next.",
-                    Toast.LENGTH_SHORT
-            ).show();
+            mAuth.signInWithEmailAndPassword(
+                    emailText,
+                    passwordText
+            ).addOnCompleteListener(this, task -> {
+
+                if (task.isSuccessful()) {
+
+                    Toast.makeText(
+                            this,
+                            "Welcome back!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    openDashboard();
+
+                } else {
+
+                    Toast.makeText(
+                            this,
+                            "Sign in failed: "
+                                    + task.getException()
+                                    .getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
         });
+
+        // Google divider
+        addGoogleDivider();
+
+        // Google button
+        Button googleButton =
+                googleButton("Continue with Google");
+
+        content.addView(
+                googleButton,
+                buttonParams()
+        );
+
+        googleButton.setOnClickListener(
+                v -> startGoogleSignIn()
+        );
 
         TextView create = text(
                 "Don't have an account?  Sign Up",
@@ -289,38 +370,89 @@ public class WelcomeActivity extends Activity {
 
         signUp.setOnClickListener(v -> {
 
-            if (name.getText().toString().trim().isEmpty()) {
+            String nameText =
+                    name.getText().toString().trim();
+
+            String emailText =
+                    email.getText().toString().trim();
+
+            String passwordText =
+                    password.getText().toString();
+
+            String confirmText =
+                    confirm.getText().toString();
+
+            if (nameText.isEmpty()) {
                 name.setError("Enter your name");
                 name.requestFocus();
                 return;
             }
 
-            if (email.getText().toString().trim().isEmpty()) {
+            if (emailText.isEmpty()) {
                 email.setError("Enter your email");
                 email.requestFocus();
                 return;
             }
 
-            if (password.getText().toString().isEmpty()) {
+            if (passwordText.isEmpty()) {
                 password.setError("Create a password");
                 password.requestFocus();
                 return;
             }
 
-            if (!password.getText().toString()
-                    .equals(confirm.getText().toString())) {
+            if (!passwordText.equals(confirmText)) {
 
-                confirm.setError("Passwords do not match");
+                confirm.setError(
+                        "Passwords do not match"
+                );
+
                 confirm.requestFocus();
                 return;
             }
 
-            Toast.makeText(
-                    this,
-                    "Account screen is ready. Firebase will be connected next.",
-                    Toast.LENGTH_SHORT
-            ).show();
+            mAuth.createUserWithEmailAndPassword(
+                    emailText,
+                    passwordText
+            ).addOnCompleteListener(this, task -> {
+
+                if (task.isSuccessful()) {
+
+                    Toast.makeText(
+                            this,
+                            "Account created successfully!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    openDashboard();
+
+                } else {
+
+                    Toast.makeText(
+                            this,
+                            "Account creation failed: "
+                                    + task.getException()
+                                    .getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
         });
+
+        // Google divider
+        addGoogleDivider();
+
+        // Google button
+        Button googleButton =
+                googleButton("Continue with Google");
+
+        content.addView(
+                googleButton,
+                buttonParams()
+        );
+
+        googleButton.setOnClickListener(
+                v -> startGoogleSignIn()
+        );
 
         TextView login = text(
                 "Already have an account?  Sign In",
@@ -335,6 +467,193 @@ public class WelcomeActivity extends Activity {
         login.setOnClickListener(v -> showLogin());
 
         setContentView(root);
+    }
+
+    // =========================
+    // GOOGLE SIGN-IN
+    // =========================
+
+    private void startGoogleSignIn() {
+
+        Intent signInIntent =
+                googleSignInClient.getSignInIntent();
+
+        startActivityForResult(
+                signInIntent,
+                RC_GOOGLE_SIGN_IN
+        );
+    }
+
+    @Override
+    protected void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data
+    ) {
+        super.onActivityResult(
+                requestCode,
+                resultCode,
+                data
+        );
+
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+
+            Task<GoogleSignInAccount> task =
+                    GoogleSignIn.getSignedInAccountFromIntent(
+                            data
+                    );
+
+            try {
+
+                GoogleSignInAccount account =
+                        task.getResult(
+                                ApiException.class
+                        );
+
+                if (account == null) {
+                    Toast.makeText(
+                            this,
+                            "Google sign-in failed.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
+                }
+
+                AuthCredential credential =
+                        GoogleAuthProvider.getCredential(
+                                account.getIdToken(),
+                                null
+                        );
+
+                mAuth.signInWithCredential(
+                        credential
+                ).addOnCompleteListener(
+                        this,
+                        authTask -> {
+
+                            if (authTask.isSuccessful()) {
+
+                                Toast.makeText(
+                                        this,
+                                        "Google sign-in successful!",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                openDashboard();
+
+                            } else {
+
+                                Toast.makeText(
+                                        this,
+                                        "Google sign-in failed: "
+                                                + authTask
+                                                .getException()
+                                                .getMessage(),
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                        }
+                );
+
+            } catch (ApiException e) {
+
+                Toast.makeText(
+                        this,
+                        "Google sign-in cancelled or failed.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        }
+    }
+
+    private void openDashboard() {
+
+        Intent intent =
+                new Intent(
+                        WelcomeActivity.this,
+                        MainActivity.class
+                );
+
+        startActivity(intent);
+        finish();
+    }
+
+    // =========================
+    // GOOGLE DIVIDER
+    // =========================
+
+    private void addGoogleDivider() {
+
+        TextView divider = text(
+                "────────  or  ────────",
+                14,
+                Color.rgb(140, 190, 165)
+        );
+
+        divider.setGravity(Gravity.CENTER);
+        divider.setPadding(
+                0,
+                dp(5),
+                0,
+                dp(5)
+        );
+
+        content.addView(
+                divider,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(45)
+                )
+        );
+    }
+
+    // =========================
+    // GOOGLE BUTTON
+    // =========================
+
+    private Button googleButton(String value) {
+
+        Button b = new Button(this);
+
+        b.setText("G   " + value);
+        b.setTextSize(16);
+        b.setTextColor(Color.WHITE);
+
+        b.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
+        b.setAllCaps(false);
+        b.setGravity(Gravity.CENTER);
+        b.setIncludeFontPadding(true);
+
+        b.setMinHeight(dp(56));
+
+        b.setPadding(
+                dp(15),
+                dp(8),
+                dp(15),
+                dp(8)
+        );
+
+        GradientDrawable bg =
+                new GradientDrawable();
+
+        bg.setColor(
+                Color.argb(45, 255, 255, 255)
+        );
+
+        bg.setCornerRadius(dp(30));
+
+        bg.setStroke(
+                dp(1),
+                Color.argb(100, 255, 255, 255)
+        );
+
+        b.setBackground(bg);
+
+        return b;
     }
 
     // =========================
@@ -360,11 +679,13 @@ public class WelcomeActivity extends Activity {
         TradingBackground chart =
                 new TradingBackground(this);
 
-        frame.addView(chart,
+        frame.addView(
+                chart,
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
-                ));
+                )
+        );
 
         return frame;
     }
@@ -384,7 +705,9 @@ public class WelcomeActivity extends Activity {
                 .scaleX(1f)
                 .scaleY(1f)
                 .setDuration(900)
-                .setInterpolator(new DecelerateInterpolator())
+                .setInterpolator(
+                        new DecelerateInterpolator()
+                )
                 .start();
 
         ObjectAnimator pulseX =
@@ -408,8 +731,13 @@ public class WelcomeActivity extends Activity {
         pulseX.setDuration(2200);
         pulseY.setDuration(2200);
 
-        pulseX.setRepeatCount(Animation.INFINITE);
-        pulseY.setRepeatCount(Animation.INFINITE);
+        pulseX.setRepeatCount(
+                Animation.INFINITE
+        );
+
+        pulseY.setRepeatCount(
+                Animation.INFINITE
+        );
 
         pulseX.start();
         pulseY.start();
@@ -444,6 +772,7 @@ public class WelcomeActivity extends Activity {
         EditText e = new EditText(this);
 
         e.setHint(hint);
+
         e.setHintTextColor(
                 Color.rgb(150, 190, 170)
         );
@@ -466,11 +795,18 @@ public class WelcomeActivity extends Activity {
                 Color.argb(80, 0, 70, 45)
         );
 
-        background.setCornerRadius(dp(16));
+        background.setCornerRadius(
+                dp(16)
+        );
 
         background.setStroke(
                 dp(1),
-                Color.argb(130, 0, 220, 120)
+                Color.argb(
+                        130,
+                        0,
+                        220,
+                        120
+                )
         );
 
         e.setBackground(background);
@@ -615,7 +951,7 @@ public class WelcomeActivity extends Activity {
                 getResources()
                         .getDisplayMetrics()
                         .density
-                + 0.5f
+                        + 0.5f
         );
     }
 
@@ -742,7 +1078,6 @@ public class WelcomeActivity extends Activity {
 
             paint.setStrokeWidth(1);
 
-            // Horizontal trading-grid lines
             for (int i = 1; i < 7; i++) {
 
                 float y =
@@ -757,7 +1092,6 @@ public class WelcomeActivity extends Activity {
                 );
             }
 
-            // Vertical trading-grid lines
             for (int i = 1; i < 5; i++) {
 
                 float x =
@@ -773,4 +1107,4 @@ public class WelcomeActivity extends Activity {
             }
         }
     }
-                          }
+            }
