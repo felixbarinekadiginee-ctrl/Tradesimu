@@ -10,12 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Welcome screen -->
         <activity
-            android:name=".ChartActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".MainActivity"
+            android:name=".WelcomeActivity"
             android:exported="true">
 
             <intent-filter>
@@ -24,6 +21,16 @@
             </intent-filter>
 
         </activity>
+
+        <!-- Dashboard -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Introduction and trading screen -->
+        <activity
+            android:name=".ChartActivity"
+            android:exported="false" />
 
     </application>
 
