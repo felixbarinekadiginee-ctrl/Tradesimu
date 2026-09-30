@@ -7,8 +7,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
-import android.view.View;
-import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -16,8 +14,9 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-    int GREEN = Color.rgb(0, 180, 100);
-    int DARK = Color.rgb(20, 25, 30);
+    private final int GREEN = Color.rgb(0, 180, 100);
+    private final int DARK = Color.rgb(20, 25, 30);
+    private final int LIGHT = Color.rgb(245, 248, 247);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,28 +27,37 @@ public class MainActivity extends Activity {
     private void showHome() {
 
         ScrollView scroll = new ScrollView(this);
-        scroll.setBackgroundColor(Color.rgb(245, 248, 247));
+        scroll.setFillViewport(true);
+        scroll.setBackgroundColor(LIGHT);
 
         LinearLayout main = new LinearLayout(this);
         main.setOrientation(LinearLayout.VERTICAL);
-        main.setPadding(20, 25, 20, 30);
+        main.setPadding(18, 20, 18, 30);
 
+        // TITLE
         TextView title = text("TradeSim", 30, DARK);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         main.addView(title);
 
-        TextView subtitle = text("Your Trading Dashboard", 20, DARK);
-        subtitle.setPadding(0, 5, 0, 20);
+        TextView subtitle = text("Your Trading Dashboard", 18, Color.DKGRAY);
+        subtitle.setPadding(0, 4, 0, 18);
         main.addView(subtitle);
 
-        // BALANCE
-        LinearLayout balance = card();
+        // BALANCE CARD
+        LinearLayout balance = new LinearLayout(this);
+        balance.setOrientation(LinearLayout.VERTICAL);
+        balance.setPadding(20, 18, 20, 18);
+
+        GradientDrawable balanceBg = new GradientDrawable();
+        balanceBg.setColor(Color.rgb(18, 130, 78));
+        balanceBg.setCornerRadius(28);
+        balance.setBackground(balanceBg);
 
         TextView balanceTitle =
                 text("VIRTUAL BALANCE", 13, Color.WHITE);
 
         TextView balanceAmount =
-                text("$10,000.00", 32, Color.WHITE);
+                text("$10,000.00", 30, Color.WHITE);
 
         balanceAmount.setTypeface(
                 Typeface.DEFAULT,
@@ -63,46 +71,27 @@ public class MainActivity extends Activity {
         balance.addView(balanceAmount);
         balance.addView(profit);
 
-        GradientDrawable balanceBg =
-                new GradientDrawable();
+        LinearLayout.LayoutParams balanceParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
 
-        balanceBg.setColor(Color.rgb(18, 130, 78));
-        balanceBg.setCornerRadius(28);
-
-        balance.setBackground(balanceBg);
-
-        main.addView(balance);
+        main.addView(balance, balanceParams);
 
         // QUICK ACTIONS
-        TextView quick =
-                text("Quick Actions", 21, DARK);
-
-        quick.setTypeface(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-        );
-
-        quick.setPadding(0, 25, 0, 10);
+        TextView quick = text("Quick Actions", 21, DARK);
+        quick.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        quick.setPadding(0, 22, 0, 10);
         main.addView(quick);
 
-        LinearLayout actions =
-                new LinearLayout(this);
+        LinearLayout actions = new LinearLayout(this);
+        actions.setOrientation(LinearLayout.HORIZONTAL);
 
-        actions.setOrientation(
-                LinearLayout.HORIZONTAL
-        );
-
-        Button charts =
-                action("📈\nCharts");
-
-        Button tutor =
-                action("🤖\nAI Tutor");
-
-        Button rewards =
-                action("🎁\nRewards");
-
-        Button profile =
-                action("👤\nProfile");
+        Button charts = action("📈\nCharts");
+        Button tutor = action("🤖\nAI Tutor");
+        Button rewards = action("🎁\nRewards");
+        Button profile = action("👤\nProfile");
 
         actions.addView(charts);
         actions.addView(tutor);
@@ -111,72 +100,47 @@ public class MainActivity extends Activity {
 
         main.addView(actions);
 
-        charts.setOnClickListener(v -> {
-            startActivity(
-                    new Intent(
-                            MainActivity.this,
-                            ChartActivity.class
-                    )
-            );
-        });
+        charts.setOnClickListener(v -> openChart());
 
         // MARKETS
-        TextView marketTitle =
-                text("Markets", 22, DARK);
-
+        TextView marketTitle = text("Markets", 22, DARK);
         marketTitle.setTypeface(
                 Typeface.DEFAULT,
                 Typeface.BOLD
         );
-
-        marketTitle.setPadding(0, 25, 0, 10);
+        marketTitle.setPadding(0, 22, 0, 10);
         main.addView(marketTitle);
 
         main.addView(
-                market(
-                        "BTC/USD",
-                        "$63,240.32",
-                        "+2.41%"
-                )
+                market("BTC/USD", "$63,240.32", "+2.41%")
         );
 
         main.addView(
-                market(
-                        "ETH/USD",
-                        "$3,420.18",
-                        "+1.87%"
-                )
+                market("ETH/USD", "$3,420.18", "+1.87%")
         );
 
         main.addView(
-                market(
-                        "AAPL",
-                        "$227.16",
-                        "+0.92%"
-                )
+                market("AAPL", "$227.16", "+0.92%")
         );
 
         main.addView(
-                market(
-                        "TSLA",
-                        "$258.12",
-                        "-0.64%"
-                )
+                market("TSLA", "$258.12", "-0.64%")
         );
 
-        // START BUTTON
-        Button start =
-                new Button(this);
+        // START PRACTICING
+        Button start = new Button(this);
 
         start.setText("START PRACTICING");
         start.setTextSize(17);
         start.setTextColor(Color.WHITE);
+        start.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
         start.setGravity(Gravity.CENTER);
         start.setAllCaps(false);
 
-        GradientDrawable startBg =
-                new GradientDrawable();
-
+        GradientDrawable startBg = new GradientDrawable();
         startBg.setColor(GREEN);
         startBg.setCornerRadius(35);
 
@@ -184,37 +148,39 @@ public class MainActivity extends Activity {
 
         LinearLayout.LayoutParams startParams =
                 new LinearLayout.LayoutParams(
-                        -1,
-                        70
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        64
                 );
 
-        startParams.setMargins(0, 25, 0, 15);
+        startParams.setMargins(0, 18, 0, 12);
 
         main.addView(start, startParams);
 
-        start.setOnClickListener(v -> {
-            startActivity(
-                    new Intent(
-                            MainActivity.this,
-                            ChartActivity.class
-                    )
-            );
-        });
+        start.setOnClickListener(v -> openChart());
 
-        TextView note =
-                text(
-                        "💡 Practice trading with virtual money without risking real money.",
-                        15,
-                        Color.DKGRAY
-                );
+        // NOTE
+        TextView note = text(
+                "💡 Practice trading with virtual money without risking real money.",
+                14,
+                Color.DKGRAY
+        );
 
         note.setGravity(Gravity.CENTER);
-        note.setPadding(10, 15, 10, 10);
+        note.setPadding(10, 8, 10, 10);
 
         main.addView(note);
 
         scroll.addView(main);
         setContentView(scroll);
+    }
+
+    private void openChart() {
+        Intent intent = new Intent(
+                MainActivity.this,
+                ChartActivity.class
+        );
+
+        startActivity(intent);
     }
 
     private TextView text(
@@ -223,8 +189,7 @@ public class MainActivity extends Activity {
             int color
     ) {
 
-        TextView t =
-                new TextView(this);
+        TextView t = new TextView(this);
 
         t.setText(value);
         t.setTextSize(size);
@@ -233,34 +198,17 @@ public class MainActivity extends Activity {
         return t;
     }
 
-    private LinearLayout card() {
-
-        LinearLayout c =
-                new LinearLayout(this);
-
-        c.setOrientation(
-                LinearLayout.VERTICAL
-        );
-
-        c.setPadding(20, 20, 20, 20);
-
-        return c;
-    }
-
     private Button action(String value) {
 
-        Button b =
-                new Button(this);
+        Button b = new Button(this);
 
         b.setText(value);
-        b.setTextSize(12);
+        b.setTextSize(11);
         b.setTextColor(DARK);
         b.setAllCaps(false);
         b.setGravity(Gravity.CENTER);
 
-        GradientDrawable bg =
-                new GradientDrawable();
-
+        GradientDrawable bg = new GradientDrawable();
         bg.setColor(Color.WHITE);
         bg.setCornerRadius(22);
 
@@ -269,7 +217,7 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams p =
                 new LinearLayout.LayoutParams(
                         0,
-                        82,
+                        75,
                         1
                 );
 
@@ -286,11 +234,15 @@ public class MainActivity extends Activity {
             String change
     ) {
 
-        LinearLayout m = card();
+        LinearLayout m = new LinearLayout(this);
 
-        GradientDrawable bg =
-                new GradientDrawable();
+        m.setOrientation(
+                LinearLayout.VERTICAL
+        );
 
+        m.setPadding(18, 12, 18, 12);
+
+        GradientDrawable bg = new GradientDrawable();
         bg.setColor(Color.WHITE);
         bg.setCornerRadius(23);
 
@@ -298,38 +250,43 @@ public class MainActivity extends Activity {
 
         LinearLayout.LayoutParams p =
                 new LinearLayout.LayoutParams(
-                        -1,
-                        115
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
                 );
 
-        p.setMargins(0, 0, 0, 10);
+        p.setMargins(0, 0, 0, 9);
 
         m.setLayoutParams(p);
 
-        TextView n =
-                text(name, 18, DARK);
+        TextView n = text(
+                name,
+                17,
+                DARK
+        );
 
         n.setTypeface(
                 Typeface.DEFAULT,
                 Typeface.BOLD
         );
 
-        TextView pr =
-                text(price, 17, DARK);
+        TextView pr = text(
+                price,
+                16,
+                DARK
+        );
 
         pr.setTypeface(
                 Typeface.DEFAULT,
                 Typeface.BOLD
         );
 
-        TextView ch =
-                text(
-                        change,
-                        14,
-                        change.startsWith("+")
-                                ? GREEN
-                                : Color.RED
-                );
+        TextView ch = text(
+                change,
+                14,
+                change.startsWith("+")
+                        ? GREEN
+                        : Color.RED
+        );
 
         m.addView(n);
         m.addView(pr);
