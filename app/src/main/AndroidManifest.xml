@@ -2,9 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:theme="@style/AppTheme"
+        android:allowBackup="true"
+        android:icon="@drawable/tradesim_logo"
         android:label="TradeSim"
-        android:allowBackup="true">
+        android:roundIcon="@drawable/tradesim_logo"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
 
         <activity
             android:name=".MainActivity"
