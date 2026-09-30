@@ -15,8 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 public class MainActivity extends Activity {
 
 private final int GREEN = Color.rgb(0, 210, 115);
@@ -40,6 +38,7 @@ private void showDashboard() {
     root.setOrientation(LinearLayout.VERTICAL);
 
     TradingBackground background = new TradingBackground();
+
     root.addView(
             background,
             new LinearLayout.LayoutParams(
@@ -51,7 +50,12 @@ private void showDashboard() {
 
     contentArea = new LinearLayout(this);
     contentArea.setOrientation(LinearLayout.VERTICAL);
-    contentArea.setPadding(dp(18), dp(18), dp(18), dp(12));
+    contentArea.setPadding(
+            dp(18),
+            dp(14),
+            dp(18),
+            dp(12)
+    );
 
     ScrollView scroll = new ScrollView(this);
     scroll.setFillViewport(true);
@@ -77,6 +81,7 @@ private void showDashboard() {
     );
 
     setContentView(root);
+
     showHome();
 }
 
@@ -84,22 +89,84 @@ private void showHome() {
 
     contentArea.removeAllViews();
 
+    // =========================
+    // TOP HEADER
+    // =========================
+
+    LinearLayout header = new LinearLayout(this);
+    header.setOrientation(LinearLayout.HORIZONTAL);
+    header.setGravity(Gravity.CENTER_VERTICAL);
+
+    LinearLayout brandArea = new LinearLayout(this);
+    brandArea.setOrientation(LinearLayout.VERTICAL);
+
     TextView brand = text(
             "TradeSim",
             28,
             GREEN
     );
-    brand.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
 
-    contentArea.addView(brand);
+    brand.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView status = text(
-            "MARKETS • SIMULATED TRADING",
-            11,
+            "SIMULATED TRADING",
+            10,
             MUTED
     );
-    status.setPadding(0, dp(2), 0, dp(16));
-    contentArea.addView(status);
+
+    brandArea.addView(brand);
+    brandArea.addView(status);
+
+    header.addView(
+            brandArea,
+            new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1
+            )
+    );
+
+    // Notification icon
+    TextView notification = iconButton("♢");
+
+    notification.setOnClickListener(
+            v -> showNotifications()
+    );
+
+    header.addView(
+            notification,
+            new LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
+            )
+    );
+
+    // Profile icon
+    TextView profile = iconButton("●");
+
+    profile.setOnClickListener(
+            v -> showProfile()
+    );
+
+    header.addView(
+            profile,
+            new LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
+            )
+    );
+
+    contentArea.addView(
+            header,
+            marginParams(0, 0, 0, 18)
+    );
+
+    // =========================
+    // PORTFOLIO
+    // =========================
 
     LinearLayout portfolio = card();
 
@@ -114,7 +181,11 @@ private void showHome() {
             32,
             TEXT
     );
-    amount.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    amount.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView gain = text(
             "+$0.00   •   0.00%",
@@ -131,12 +202,20 @@ private void showHome() {
             marginParams(0, 0, 0, 14)
     );
 
+    // =========================
+    // BITCOIN CHART
+    // =========================
+
     TextView chartTitle = text(
             "BTC / USD",
             20,
             TEXT
     );
-    chartTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    chartTitle.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     contentArea.addView(chartTitle);
 
@@ -152,6 +231,7 @@ private void showHome() {
     );
 
     MiniChart chart = new MiniChart();
+
     contentArea.addView(
             chart,
             new LinearLayout.LayoutParams(
@@ -160,45 +240,171 @@ private void showHome() {
             )
     );
 
+    // =========================
+    // MARKETS
+    // =========================
+
     TextView marketTitle = text(
             "Markets",
             20,
             TEXT
     );
-    marketTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-    marketTitle.setPadding(0, dp(20), 0, dp(8));
+
+    marketTitle.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
+
+    marketTitle.setPadding(
+            0,
+            dp(20),
+            0,
+            dp(8)
+    );
+
     contentArea.addView(marketTitle);
 
-    addMarket("BTC/USD", "$63,240.32", "+2.41%");
-    addMarket("ETH/USD", "$3,420.18", "+1.87%");
-    addMarket("AAPL", "$227.16", "+0.92%");
-    addMarket("TSLA", "$258.12", "-0.64%");
+    addMarket(
+            "BTC/USD",
+            "$63,240.32",
+            "+2.41%"
+    );
+
+    addMarket(
+            "ETH/USD",
+            "$3,420.18",
+            "+1.87%"
+    );
+
+    addMarket(
+            "AAPL",
+            "$227.16",
+            "+0.92%"
+    );
+
+    addMarket(
+            "TSLA",
+            "$258.12",
+            "-0.64%"
+    );
+
+    // =========================
+    // TRADE BUTTON
+    // =========================
 
     TextView trade = text(
             "TRADE NOW",
             16,
             Color.BLACK
     );
-    trade.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    trade.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
+
     trade.setGravity(Gravity.CENTER);
 
-    GradientDrawable tradeBg = new GradientDrawable();
+    GradientDrawable tradeBg =
+            new GradientDrawable();
+
     tradeBg.setColor(GREEN);
     tradeBg.setCornerRadius(dp(28));
+
     trade.setBackground(tradeBg);
 
     contentArea.addView(
             trade,
-            new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    dp(58)
+            marginParams(
+                    0,
+                    8,
+                    0,
+                    12,
+                    58
             )
     );
 
-    trade.setOnClickListener(v -> showTrade());
+    trade.setOnClickListener(
+            v -> showTrade()
+    );
 
     fadeIn(contentArea);
 }
+
+// =========================
+// NOTIFICATIONS
+// =========================
+
+private void showNotifications() {
+
+    contentArea.removeAllViews();
+
+    addPageTitle(
+            "Notifications",
+            "Your latest TradeSim activity."
+    );
+
+    addNotification(
+            "Welcome to TradeSim",
+            "Your virtual trading account is ready."
+    );
+
+    addNotification(
+            "Practice Mode",
+            "All trading prices are simulated."
+    );
+
+    addNotification(
+            "Rewards",
+            "Your virtual rewards will appear here."
+    );
+
+    fadeIn(contentArea);
+}
+
+private void addNotification(
+        String title,
+        String message
+) {
+
+    LinearLayout box = card();
+
+    TextView t = text(
+            title,
+            17,
+            TEXT
+    );
+
+    t.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
+
+    TextView m = text(
+            message,
+            13,
+            MUTED
+    );
+
+    m.setPadding(
+            0,
+            dp(5),
+            0,
+            0
+    );
+
+    box.addView(t);
+    box.addView(m);
+
+    contentArea.addView(
+            box,
+            marginParams(0, 0, 0, 9)
+    );
+}
+
+// =========================
+// TRADE
+// =========================
 
 private void showTrade() {
 
@@ -216,14 +422,22 @@ private void showTrade() {
             24,
             TEXT
     );
-    pair.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    pair.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView price = text(
             "$63,240.32",
             28,
             GREEN
     );
-    price.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    price.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView mode = text(
             "SIMULATED MARKET",
@@ -240,21 +454,41 @@ private void showTrade() {
             marginParams(0, 0, 0, 14)
     );
 
-    addTradeButton("BUY BTC", GREEN, Color.BLACK);
-    addTradeButton("SELL BTC", Color.rgb(40, 65, 55), TEXT);
+    addTradeButton(
+            "BUY BTC",
+            GREEN,
+            Color.BLACK
+    );
+
+    addTradeButton(
+            "SELL BTC",
+            Color.rgb(40, 65, 55),
+            TEXT
+    );
 
     TextView info = text(
             "All trades are simulated. No real money is being used.",
             13,
             MUTED
     );
+
     info.setGravity(Gravity.CENTER);
-    info.setPadding(0, dp(18), 0, 0);
+
+    info.setPadding(
+            0,
+            dp(18),
+            0,
+            0
+    );
 
     contentArea.addView(info);
 
     fadeIn(contentArea);
 }
+
+// =========================
+// AI
+// =========================
 
 private void showAI() {
 
@@ -272,21 +506,35 @@ private void showAI() {
             30,
             GREEN
     );
-    icon.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    icon.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView title = text(
             "TradeSim AI Tutor",
             22,
             TEXT
     );
-    title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    title.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView description = text(
             "Ask questions about charts, markets, risk management and trading basics.",
             14,
             MUTED
     );
-    description.setPadding(0, dp(8), 0, dp(16));
+
+    description.setPadding(
+            0,
+            dp(8),
+            0,
+            dp(16)
+    );
 
     aiCard.addView(icon);
     aiCard.addView(title);
@@ -297,12 +545,20 @@ private void showAI() {
             15,
             Color.BLACK
     );
-    start.setGravity(Gravity.CENTER);
-    start.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
 
-    GradientDrawable bg = new GradientDrawable();
+    start.setGravity(Gravity.CENTER);
+
+    start.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
+
+    GradientDrawable bg =
+            new GradientDrawable();
+
     bg.setColor(GREEN);
     bg.setCornerRadius(dp(25));
+
     start.setBackground(bg);
 
     aiCard.addView(
@@ -317,6 +573,10 @@ private void showAI() {
 
     fadeIn(contentArea);
 }
+
+// =========================
+// REWARDS
+// =========================
 
 private void showRewards() {
 
@@ -340,7 +600,11 @@ private void showRewards() {
             38,
             GREEN
     );
-    points.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    points.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView description = text(
             "Complete activities and, later, watch rewarded ads to earn virtual TradeSim rewards.",
@@ -364,7 +628,11 @@ private void showRewards() {
             20,
             TEXT
     );
-    dailyTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    dailyTitle.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView dailyText = text(
             "Your reward system will appear here.",
@@ -379,6 +647,10 @@ private void showRewards() {
 
     fadeIn(contentArea);
 }
+
+// =========================
+// PROFILE
+// =========================
 
 private void showProfile() {
 
@@ -402,7 +674,11 @@ private void showProfile() {
             25,
             TEXT
     );
-    name.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    name.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView status = text(
             "Virtual trading account",
@@ -427,14 +703,25 @@ private void showProfile() {
     fadeIn(contentArea);
 }
 
-private void addPageTitle(String title, String subtitle) {
+// =========================
+// PAGE TITLE
+// =========================
+
+private void addPageTitle(
+        String title,
+        String subtitle
+) {
 
     TextView t = text(
             title,
             30,
             TEXT
     );
-    t.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    t.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     contentArea.addView(t);
 
@@ -443,10 +730,20 @@ private void addPageTitle(String title, String subtitle) {
             14,
             MUTED
     );
-    s.setPadding(0, dp(4), 0, dp(20));
+
+    s.setPadding(
+            0,
+            dp(4),
+            0,
+            dp(20)
+    );
 
     contentArea.addView(s);
 }
+
+// =========================
+// MARKET CARD
+// =========================
 
 private void addMarket(
         String name,
@@ -455,18 +752,32 @@ private void addMarket(
 ) {
 
     LinearLayout row = card();
-    row.setOrientation(LinearLayout.HORIZONTAL);
-    row.setGravity(Gravity.CENTER_VERTICAL);
 
-    LinearLayout left = new LinearLayout(this);
-    left.setOrientation(LinearLayout.VERTICAL);
+    row.setOrientation(
+            LinearLayout.HORIZONTAL
+    );
+
+    row.setGravity(
+            Gravity.CENTER_VERTICAL
+    );
+
+    LinearLayout left =
+            new LinearLayout(this);
+
+    left.setOrientation(
+            LinearLayout.VERTICAL
+    );
 
     TextView n = text(
             name,
             16,
             TEXT
     );
-    n.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+    n.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
 
     TextView p = text(
             price,
@@ -484,7 +795,10 @@ private void addMarket(
                     ? GREEN
                     : Color.rgb(180, 120, 120)
     );
-    c.setGravity(Gravity.CENTER_VERTICAL);
+
+    c.setGravity(
+            Gravity.CENTER_VERTICAL
+    );
 
     row.addView(
             left,
@@ -503,6 +817,10 @@ private void addMarket(
     );
 }
 
+// =========================
+// TRADE BUTTON
+// =========================
+
 private void addTradeButton(
         String label,
         int backgroundColor,
@@ -515,33 +833,68 @@ private void addTradeButton(
             textColor
     );
 
-    button.setGravity(Gravity.CENTER);
-    button.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+    button.setGravity(
+            Gravity.CENTER
+    );
 
-    GradientDrawable bg = new GradientDrawable();
+    button.setTypeface(
+            Typeface.DEFAULT,
+            Typeface.BOLD
+    );
+
+    GradientDrawable bg =
+            new GradientDrawable();
+
     bg.setColor(backgroundColor);
     bg.setCornerRadius(dp(26));
+
     button.setBackground(bg);
 
     contentArea.addView(
             button,
-            marginParams(0, 0, 0, 10)
+            marginParams(0, 0, 0, 10, 56)
     );
 }
 
-private void addProfileRow(String label) {
+// =========================
+// PROFILE ROW
+// =========================
+
+private void addProfileRow(
+        String label
+) {
 
     TextView row = text(
             label,
             16,
             TEXT
     );
-    row.setGravity(Gravity.CENTER_VERTICAL);
-    row.setPadding(dp(18), 0, dp(18), 0);
 
-    GradientDrawable bg = new GradientDrawable();
-    bg.setColor(Color.argb(125, 8, 30, 21));
+    row.setGravity(
+            Gravity.CENTER_VERTICAL
+    );
+
+    row.setPadding(
+            dp(18),
+            0,
+            dp(18),
+            0
+    );
+
+    GradientDrawable bg =
+            new GradientDrawable();
+
+    bg.setColor(
+            Color.argb(
+                    125,
+                    8,
+                    30,
+                    21
+            )
+    );
+
     bg.setCornerRadius(dp(20));
+
     row.setBackground(bg);
 
     contentArea.addView(
@@ -551,15 +904,24 @@ private void addProfileRow(String label) {
                     0,
                     0,
                     8,
-                    dp(52)
+                    52
             )
     );
 }
 
+// =========================
+// CARD
+// =========================
+
 private LinearLayout card() {
 
-    LinearLayout box = new LinearLayout(this);
-    box.setOrientation(LinearLayout.VERTICAL);
+    LinearLayout box =
+            new LinearLayout(this);
+
+    box.setOrientation(
+            LinearLayout.VERTICAL
+    );
+
     box.setPadding(
             dp(18),
             dp(16),
@@ -567,9 +929,28 @@ private LinearLayout card() {
             dp(16)
     );
 
-    GradientDrawable bg = new GradientDrawable();
-    bg.setColor(Color.argb(170, 7, 31, 21));
-    bg.setStroke(dp(1), Color.argb(100, 0, 210, 115));
+    GradientDrawable bg =
+            new GradientDrawable();
+
+    bg.setColor(
+            Color.argb(
+                    170,
+                    7,
+                    31,
+                    21
+            )
+    );
+
+    bg.setStroke(
+            dp(1),
+            Color.argb(
+                    100,
+                    0,
+                    210,
+                    115
+            )
+    );
+
     bg.setCornerRadius(dp(22));
 
     box.setBackground(bg);
@@ -577,11 +958,72 @@ private LinearLayout card() {
     return box;
 }
 
+// =========================
+// TOP ICON BUTTON
+// =========================
+
+private TextView iconButton(
+        String symbol
+) {
+
+    TextView button = text(
+            symbol,
+            24,
+            GREEN
+    );
+
+    button.setGravity(
+            Gravity.CENTER
+    );
+
+    GradientDrawable bg =
+            new GradientDrawable();
+
+    bg.setColor(
+            Color.argb(
+                    130,
+                    5,
+                    35,
+                    23
+            )
+    );
+
+    bg.setStroke(
+            dp(1),
+            Color.argb(
+                    90,
+                    0,
+                    210,
+                    115
+            )
+    );
+
+    bg.setShape(
+            GradientDrawable.OVAL
+    );
+
+    button.setBackground(bg);
+
+    return button;
+}
+
+// =========================
+// BOTTOM NAVIGATION
+// =========================
+
 private LinearLayout createBottomNavigation() {
 
-    LinearLayout nav = new LinearLayout(this);
-    nav.setOrientation(LinearLayout.HORIZONTAL);
-    nav.setGravity(Gravity.CENTER);
+    LinearLayout nav =
+            new LinearLayout(this);
+
+    nav.setOrientation(
+            LinearLayout.HORIZONTAL
+    );
+
+    nav.setGravity(
+            Gravity.CENTER
+    );
+
     nav.setPadding(
             dp(6),
             dp(6),
@@ -589,19 +1031,63 @@ private LinearLayout createBottomNavigation() {
             dp(6)
     );
 
-    GradientDrawable bg = new GradientDrawable();
-    bg.setColor(Color.rgb(2, 18, 12));
+    GradientDrawable bg =
+            new GradientDrawable();
+
+    bg.setColor(
+            Color.rgb(
+                    2,
+                    18,
+                    12
+            )
+    );
+
     bg.setStroke(
             dp(1),
-            Color.argb(100, 0, 210, 115)
+            Color.argb(
+                    100,
+                    0,
+                    210,
+                    115
+            )
     );
+
     nav.setBackground(bg);
 
-    addNavItem(nav, "⌂", "Home", 0);
-    addNavItem(nav, "▣", "Trade", 1);
-    addNavItem(nav, "✦", "AI", 2);
-    addNavItem(nav, "◇", "Rewards", 3);
-    addNavItem(nav, "●", "Profile", 4);
+    addNavItem(
+            nav,
+            "⌂",
+            "Home",
+            0
+    );
+
+    addNavItem(
+            nav,
+            "▣",
+            "Trade",
+            1
+    );
+
+    addNavItem(
+            nav,
+            "✦",
+            "AI",
+            2
+    );
+
+    addNavItem(
+            nav,
+            "◇",
+            "Rewards",
+            3
+    );
+
+    addNavItem(
+            nav,
+            "●",
+            "Profile",
+            4
+    );
 
     return nav;
 }
@@ -613,23 +1099,36 @@ private void addNavItem(
         int position
 ) {
 
-    LinearLayout item = new LinearLayout(this);
-    item.setOrientation(LinearLayout.VERTICAL);
-    item.setGravity(Gravity.CENTER);
+    LinearLayout item =
+            new LinearLayout(this);
+
+    item.setOrientation(
+            LinearLayout.VERTICAL
+    );
+
+    item.setGravity(
+            Gravity.CENTER
+    );
 
     TextView iconView = text(
             icon,
             21,
             GREEN
     );
-    iconView.setGravity(Gravity.CENTER);
+
+    iconView.setGravity(
+            Gravity.CENTER
+    );
 
     TextView labelView = text(
             label,
             10,
             GREEN
     );
-    labelView.setGravity(Gravity.CENTER);
+
+    labelView.setGravity(
+            Gravity.CENTER
+    );
 
     item.addView(iconView);
     item.addView(labelView);
@@ -659,13 +1158,19 @@ private void addNavItem(
     });
 }
 
+// =========================
+// TEXT
+// =========================
+
 private TextView text(
         String value,
         float size,
         int color
 ) {
 
-    TextView t = new TextView(this);
+    TextView t =
+            new TextView(this);
+
     t.setText(value);
     t.setTextSize(size);
     t.setTextColor(color);
@@ -673,6 +1178,10 @@ private TextView text(
 
     return t;
 }
+
+// =========================
+// MARGINS
+// =========================
 
 private LinearLayout.LayoutParams marginParams(
         int left,
@@ -721,7 +1230,12 @@ private LinearLayout.LayoutParams marginParams(
     return p;
 }
 
+// =========================
+// DP
+// =========================
+
 private int dp(int value) {
+
     return (int) (
             value *
             getResources()
@@ -730,52 +1244,99 @@ private int dp(int value) {
     );
 }
 
+// =========================
+// FADE ANIMATION
+// =========================
+
 private void fadeIn(View view) {
 
     AlphaAnimation animation =
-            new AlphaAnimation(0.0f, 1.0f);
+            new AlphaAnimation(
+                    0.0f,
+                    1.0f
+            );
 
     animation.setDuration(450);
+
     view.startAnimation(animation);
 }
 
+// =========================
+// MINI CHART
+// =========================
+
 private class MiniChart extends View {
 
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Path path = new Path();
+    private Paint paint =
+            new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private Path path =
+            new Path();
+
     private float phase = 0;
 
     public MiniChart() {
+
         super(MainActivity.this);
 
         paint.setStrokeWidth(dp(2));
-        paint.setStyle(Paint.Style.STROKE);
 
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                phase += 0.08f;
-                invalidate();
-                postDelayed(this, 45);
-            }
-        }, 45);
+        paint.setStyle(
+                Paint.Style.STROKE
+        );
+
+        postDelayed(
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        phase += 0.08f;
+
+                        invalidate();
+
+                        postDelayed(
+                                this,
+                                45
+                        );
+                    }
+                },
+                45
+        );
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(
+            Canvas canvas
+    ) {
 
         super.onDraw(canvas);
 
         paint.setColor(
-                Color.argb(110, 0, 210, 115)
+                Color.argb(
+                        110,
+                        0,
+                        210,
+                        115
+                )
         );
-        paint.setStyle(Paint.Style.STROKE);
+
+        paint.setStyle(
+                Paint.Style.STROKE
+        );
+
         paint.setStrokeWidth(dp(1));
 
-        for (int i = 1; i < 6; i++) {
+        for (
+                int i = 1;
+                i < 6;
+                i++
+        ) {
 
             float y =
-                    getHeight() * i / 6f;
+                    getHeight()
+                            * i
+                            / 6f;
 
             canvas.drawLine(
                     0,
@@ -788,23 +1349,33 @@ private class MiniChart extends View {
 
         path.reset();
 
-        float width = getWidth();
-        float height = getHeight();
+        float width =
+                getWidth();
 
-        for (int x = 0; x <= width; x += 8) {
+        float height =
+                getHeight();
 
-            float progress = x / width;
+        for (
+                int x = 0;
+                x <= width;
+                x += 8
+        ) {
+
+            float progress =
+                    x / width;
 
             float y =
                     height * 0.65f
                     - height * 0.25f * progress
-                    - height * 0.07f *
-                    (float) Math.sin(
-                            progress * 10 + phase
+                    - height * 0.07f
+                    * (float) Math.sin(
+                            progress * 10
+                            + phase
                     )
-                    - height * 0.04f *
-                    (float) Math.sin(
-                            progress * 25 + phase * 1.4f
+                    - height * 0.04f
+                    * (float) Math.sin(
+                            progress * 25
+                            + phase * 1.4f
                     );
 
             if (x == 0) {
@@ -815,20 +1386,33 @@ private class MiniChart extends View {
         }
 
         paint.setColor(GREEN);
+
         paint.setStrokeWidth(dp(3));
-        paint.setStyle(Paint.Style.STROKE);
 
-        canvas.drawPath(path, paint);
+        paint.setStyle(
+                Paint.Style.STROKE
+        );
 
-        paint.setStyle(Paint.Style.FILL);
+        canvas.drawPath(
+                path,
+                paint
+        );
+
+        paint.setStyle(
+                Paint.Style.FILL
+        );
 
         float endY =
                 height * 0.65f
                 - height * 0.25f
-                - height * 0.07f *
-                (float) Math.sin(10 + phase)
-                - height * 0.04f *
-                (float) Math.sin(25 + phase * 1.4f);
+                - height * 0.07f
+                * (float) Math.sin(
+                        10 + phase
+                )
+                - height * 0.04f
+                * (float) Math.sin(
+                        25 + phase * 1.4f
+                );
 
         canvas.drawCircle(
                 width,
@@ -839,17 +1423,28 @@ private class MiniChart extends View {
     }
 }
 
-private class TradingBackground extends LinearLayout {
+// =========================
+// ANIMATED BACKGROUND
+// =========================
 
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Path chartPath = new Path();
+private class TradingBackground
+        extends LinearLayout {
+
+    private Paint paint =
+            new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private Path chartPath =
+            new Path();
+
     private float animation = 0;
 
     public TradingBackground() {
 
         super(MainActivity.this);
 
-        setOrientation(LinearLayout.VERTICAL);
+        setOrientation(
+                LinearLayout.VERTICAL
+        );
 
         GradientDrawable gradient =
                 new GradientDrawable(
@@ -857,47 +1452,77 @@ private class TradingBackground extends LinearLayout {
                         new int[]{
                                 DARK_GREEN,
                                 BLACK_GREEN,
-                                Color.rgb(0, 15, 9)
+                                Color.rgb(
+                                        0,
+                                        15,
+                                        9
+                                )
                         }
                 );
 
         setBackground(gradient);
 
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        postDelayed(
+                new Runnable() {
 
-                animation += 0.015f;
+                    @Override
+                    public void run() {
 
-                invalidate();
+                        animation += 0.015f;
 
-                postDelayed(this, 45);
-            }
-        }, 45);
+                        invalidate();
+
+                        postDelayed(
+                                this,
+                                45
+                        );
+                    }
+                },
+                45
+        );
     }
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
+    protected void dispatchDraw(
+            Canvas canvas
+    ) {
 
-        drawTradingBackground(canvas);
+        drawTradingBackground(
+                canvas
+        );
 
         super.dispatchDraw(canvas);
     }
 
-    private void drawTradingBackground(Canvas canvas) {
+    private void drawTradingBackground(
+            Canvas canvas
+    ) {
 
         int width = getWidth();
         int height = getHeight();
 
-        paint.setStyle(Paint.Style.STROKE);
+        paint.setStyle(
+                Paint.Style.STROKE
+        );
+
         paint.setStrokeWidth(dp(1));
+
         paint.setColor(
-                Color.argb(28, 0, 210, 115)
+                Color.argb(
+                        28,
+                        0,
+                        210,
+                        115
+                )
         );
 
         int spacing = dp(55);
 
-        for (int x = 0; x < width; x += spacing) {
+        for (
+                int x = 0;
+                x < width;
+                x += spacing
+        ) {
 
             canvas.drawLine(
                     x,
@@ -908,7 +1533,11 @@ private class TradingBackground extends LinearLayout {
             );
         }
 
-        for (int y = 0; y < height; y += spacing) {
+        for (
+                int y = 0;
+                y < height;
+                y += spacing
+        ) {
 
             canvas.drawLine(
                     0,
@@ -922,35 +1551,64 @@ private class TradingBackground extends LinearLayout {
         chartPath.reset();
 
         float chartHeight =
-                Math.max(height, dp(500));
+                Math.max(
+                        height,
+                        dp(500)
+                );
 
-        for (int x = 0; x <= width; x += 10) {
+        for (
+                int x = 0;
+                x <= width;
+                x += 10
+        ) {
 
             float progress =
-                    x / (float) Math.max(width, 1);
+                    x /
+                    (float) Math.max(
+                            width,
+                            1
+                    );
 
             float y =
                     chartHeight * 0.50f
-                    - chartHeight * 0.12f * progress
-                    - chartHeight * 0.06f *
-                    (float) Math.sin(
-                            progress * 8 + animation
+                    - chartHeight
+                    * 0.12f
+                    * progress
+                    - chartHeight
+                    * 0.06f
+                    * (float) Math.sin(
+                            progress * 8
+                            + animation
                     )
-                    - chartHeight * 0.025f *
-                    (float) Math.sin(
-                            progress * 22 + animation * 1.5f
+                    - chartHeight
+                    * 0.025f
+                    * (float) Math.sin(
+                            progress * 22
+                            + animation * 1.5f
                     );
 
             if (x == 0) {
-                chartPath.moveTo(x, y);
+                chartPath.moveTo(
+                        x,
+                        y
+                );
             } else {
-                chartPath.lineTo(x, y);
+                chartPath.lineTo(
+                        x,
+                        y
+                );
             }
         }
 
         paint.setColor(
-                Color.argb(55, 0, 210, 115)
+                Color.argb(
+                        55,
+                        0,
+                        210,
+                        115
+                )
         );
+
         paint.setStrokeWidth(dp(2));
 
         canvas.drawPath(
@@ -958,20 +1616,29 @@ private class TradingBackground extends LinearLayout {
                 paint
         );
 
-        paint.setStyle(Paint.Style.FILL);
+        paint.setStyle(
+                Paint.Style.FILL
+        );
 
         float pulse =
                 (float)
-                (
-                        0.5
-                        +
-                        0.5 *
-                        Math.sin(animation * 3)
-                );
+                        (
+                                0.5
+                                +
+                                0.5
+                                * Math.sin(
+                                        animation * 3
+                                )
+                        );
 
         paint.setColor(
                 Color.argb(
-                        (int) (20 + 35 * pulse),
+                        (int)
+                                (
+                                        20
+                                        + 35
+                                        * pulse
+                                ),
                         0,
                         210,
                         115
@@ -981,10 +1648,12 @@ private class TradingBackground extends LinearLayout {
         canvas.drawCircle(
                 width * 0.78f,
                 height * 0.30f,
-                dp(70) + dp(20) * pulse,
+                dp(70)
+                        + dp(20)
+                        * pulse,
                 paint
         );
     }
 }
 
-        }
+}
