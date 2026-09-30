@@ -9,9 +9,9 @@ import android.view.animation.*;
 import android.widget.*;
 import android.content.Intent;
 import android.content.Context;
+import android.animation.ValueAnimator;
 
 public class IntroductionActivity extends Activity {
-
     private final int GREEN = Color.rgb(0, 220, 120);
     private final int DARK_GREEN = Color.rgb(3, 25, 18);
     private final int BLACK_GREEN = Color.rgb(2, 12, 9);
@@ -36,7 +36,6 @@ public class IntroductionActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         showPage();
     }
 
@@ -244,7 +243,6 @@ public class IntroductionActivity extends Activity {
         );
 
         actionButton.setOnClickListener(v -> {
-
             if (page < 2) {
                 page++;
                 showPage();
@@ -277,10 +275,12 @@ public class IntroductionActivity extends Activity {
         button.setText(text);
         button.setTextColor(BLACK_GREEN);
         button.setTextSize(15);
+
         button.setTypeface(
                 Typeface.DEFAULT,
                 Typeface.BOLD
         );
+
         button.setAllCaps(false);
         button.setGravity(Gravity.CENTER);
 
@@ -291,7 +291,6 @@ public class IntroductionActivity extends Activity {
         background.setCornerRadius(dp(18));
 
         button.setBackground(background);
-
         button.setElevation(dp(5));
 
         return button;
@@ -327,7 +326,9 @@ public class IntroductionActivity extends Activity {
 
     private class TradingBackground extends View {
 
-        private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private Paint paint =
+                new Paint(Paint.ANTI_ALIAS_FLAG);
+
         private float progress = 0f;
 
         public TradingBackground(Context context) {
@@ -342,9 +343,11 @@ public class IntroductionActivity extends Activity {
                     );
 
             animator.setDuration(5000);
+
             animator.setRepeatCount(
                     ValueAnimator.INFINITE
             );
+
             animator.setRepeatMode(
                     ValueAnimator.RESTART
             );
@@ -383,6 +386,7 @@ public class IntroductionActivity extends Activity {
                     );
 
             paint.setShader(gradient);
+
             canvas.drawRect(
                     0,
                     0,
@@ -516,4 +520,4 @@ public class IntroductionActivity extends Activity {
             );
         }
     }
-  }
+            }
