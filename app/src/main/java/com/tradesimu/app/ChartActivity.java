@@ -12,13 +12,14 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class ChartActivity extends Activity {
 
-    private int GREEN = Color.rgb(0, 180, 100);
-    private int DARK = Color.rgb(20, 25, 30);
-    private int LIGHT = Color.rgb(245, 248, 247);
+    private final int GREEN = Color.rgb(0, 180, 100);
+    private final int DARK = Color.rgb(20, 25, 30);
+    private final int LIGHT = Color.rgb(245, 248, 247);
 
     private LinearLayout main;
     private int slide = 0;
@@ -29,15 +30,23 @@ public class ChartActivity extends Activity {
         showIntro();
     }
 
+    // =========================================================
+    // INTRODUCTION
+    // =========================================================
+
     private void showIntro() {
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.setBackgroundColor(LIGHT);
 
         main = new LinearLayout(this);
         main.setOrientation(LinearLayout.VERTICAL);
         main.setGravity(Gravity.CENTER);
-        main.setPadding(30, 30, 30, 30);
-        main.setBackgroundColor(LIGHT);
+        main.setPadding(24, 25, 24, 30);
 
-        setContentView(main);
+        scroll.addView(main);
+        setContentView(scroll);
 
         showSlide();
     }
@@ -48,21 +57,24 @@ public class ChartActivity extends Activity {
 
         TextView icon = new TextView(this);
         icon.setGravity(Gravity.CENTER);
-        icon.setTextSize(60);
+        icon.setTextSize(58);
+        icon.setIncludeFontPadding(true);
 
         TextView title = new TextView(this);
         title.setGravity(Gravity.CENTER);
-        title.setTextSize(28);
+        title.setTextSize(27);
         title.setTextColor(DARK);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        title.setPadding(10, 25, 10, 15);
+        title.setIncludeFontPadding(true);
+        title.setPadding(10, 20, 10, 15);
 
         TextView description = new TextView(this);
         description.setGravity(Gravity.CENTER);
         description.setTextSize(17);
         description.setTextColor(Color.DKGRAY);
-        description.setLineSpacing(6, 1.0f);
-        description.setPadding(20, 5, 20, 25);
+        description.setLineSpacing(7, 1.05f);
+        description.setIncludeFontPadding(true);
+        description.setPadding(15, 5, 15, 25);
 
         if (slide == 0) {
 
@@ -98,22 +110,41 @@ public class ChartActivity extends Activity {
             );
         }
 
-        main.addView(icon);
+        main.addView(
+                icon,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
 
-        main.addView(title);
+        main.addView(
+                title,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
 
-        main.addView(description);
+        main.addView(
+                description,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
 
+        // =====================================================
         // SLIDE INDICATORS
-        LinearLayout indicators =
-                new LinearLayout(this);
+        // =====================================================
 
+        LinearLayout indicators = new LinearLayout(this);
         indicators.setGravity(Gravity.CENTER);
+        indicators.setPadding(0, 5, 0, 5);
 
         for (int i = 0; i < 3; i++) {
 
-            TextView dot =
-                    new TextView(this);
+            TextView dot = new TextView(this);
 
             if (i == slide) {
                 dot.setText("●");
@@ -124,6 +155,7 @@ public class ChartActivity extends Activity {
             }
 
             dot.setTextSize(20);
+            dot.setIncludeFontPadding(true);
             dot.setPadding(7, 0, 7, 0);
 
             indicators.addView(dot);
@@ -131,8 +163,11 @@ public class ChartActivity extends Activity {
 
         main.addView(indicators);
 
-        Button next =
-                new Button(this);
+        // =====================================================
+        // CONTINUE / START PRACTICING BUTTON
+        // =====================================================
+
+        Button next = new Button(this);
 
         if (slide < 2) {
             next.setText("CONTINUE");
@@ -142,12 +177,15 @@ public class ChartActivity extends Activity {
 
         next.setTextSize(17);
         next.setTextColor(Color.WHITE);
-        next.setTypeface(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-        );
+        next.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         next.setAllCaps(false);
         next.setGravity(Gravity.CENTER);
+        next.setIncludeFontPadding(true);
+
+        // IMPORTANT: give Android enough vertical space.
+        next.setMinHeight(90);
+        next.setMinimumHeight(90);
+        next.setPadding(12, 12, 12, 12);
 
         GradientDrawable buttonBackground =
                 new GradientDrawable();
@@ -159,15 +197,15 @@ public class ChartActivity extends Activity {
 
         LinearLayout.LayoutParams buttonParams =
                 new LinearLayout.LayoutParams(
-                        -1,
-                        65
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        90
                 );
 
         buttonParams.setMargins(
-                20,
-                30,
-                20,
-                10
+                15,
+                25,
+                15,
+                15
         );
 
         main.addView(next, buttonParams);
@@ -177,7 +215,6 @@ public class ChartActivity extends Activity {
             if (slide < 2) {
 
                 slide++;
-
                 showSlide();
 
             } else {
@@ -192,52 +229,64 @@ public class ChartActivity extends Activity {
         animateSlide(next);
     }
 
+    // =========================================================
+    // TRADING SCREEN
+    // =========================================================
+
     private void showTradingChart() {
 
         main.removeAllViews();
+        main.setGravity(Gravity.TOP);
+        main.setPadding(18, 20, 18, 10);
 
-        TextView title =
-                new TextView(this);
+        // TITLE
+        TextView title = text(
+                "BTC/USD",
+                28,
+                DARK
+        );
 
-        title.setText("BTC/USD");
-        title.setTextSize(28);
-        title.setTextColor(DARK);
         title.setTypeface(
                 Typeface.DEFAULT,
                 Typeface.BOLD
         );
+
         title.setGravity(Gravity.CENTER);
 
         main.addView(title);
 
-        TextView price =
-                new TextView(this);
+        // PRICE
+        TextView price = text(
+                "$63,240.32",
+                27,
+                DARK
+        );
 
-        price.setText("$63,240.32");
-        price.setTextSize(27);
-        price.setTextColor(DARK);
         price.setTypeface(
                 Typeface.DEFAULT,
                 Typeface.BOLD
         );
+
         price.setGravity(Gravity.CENTER);
-        price.setPadding(0, 15, 0, 5);
+        price.setPadding(0, 12, 0, 5);
 
         main.addView(price);
 
-        TextView change =
-                new TextView(this);
+        // CHANGE
+        TextView change = text(
+                "+2.41%",
+                16,
+                GREEN
+        );
 
-        change.setText("+2.41%");
-        change.setTextSize(16);
-        change.setTextColor(GREEN);
         change.setGravity(Gravity.CENTER);
-
         main.addView(change);
 
+        // =====================================================
         // CHART
-        TextView chart =
-                new TextView(this);
+        // =====================================================
+
+        TextView chart = new TextView(this);
 
         chart.setText(
                 "\n" +
@@ -254,7 +303,8 @@ public class ChartActivity extends Activity {
         chart.setTextColor(GREEN);
         chart.setTypeface(Typeface.MONOSPACE);
         chart.setGravity(Gravity.CENTER);
-        chart.setPadding(5, 35, 5, 30);
+        chart.setIncludeFontPadding(true);
+        chart.setPadding(5, 30, 5, 30);
 
         GradientDrawable chartBackground =
                 new GradientDrawable();
@@ -264,67 +314,137 @@ public class ChartActivity extends Activity {
 
         chart.setBackground(chartBackground);
 
-        main.addView(chart);
+        LinearLayout.LayoutParams chartParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
 
-        TextView period =
-                new TextView(this);
+        chartParams.setMargins(0, 15, 0, 5);
 
-        period.setText(
-                "1H       4H       1D       1W"
+        main.addView(chart, chartParams);
+
+        // =====================================================
+        // TIME PERIODS
+        // =====================================================
+
+        TextView period = text(
+                "1H       4H       1D       1W",
+                16,
+                DARK
         );
 
-        period.setTextSize(16);
-        period.setTextColor(DARK);
         period.setGravity(Gravity.CENTER);
-        period.setPadding(10, 25, 10, 15);
+        period.setIncludeFontPadding(true);
+        period.setPadding(10, 20, 10, 15);
 
         main.addView(period);
 
-        Button buy =
-                tradingButton(
-                        "BUY BTC",
-                        GREEN
-                );
+        // =====================================================
+        // BUY BTC
+        // =====================================================
+
+        Button buy = tradingButton(
+                "BUY BTC",
+                GREEN
+        );
 
         main.addView(buy);
 
-        Button sell =
-                tradingButton(
-                        "SELL BTC",
-                        Color.rgb(220, 60, 60)
-                );
+        // =====================================================
+        // SELL BTC
+        // =====================================================
+
+        Button sell = tradingButton(
+                "SELL BTC",
+                Color.rgb(220, 60, 60)
+        );
 
         main.addView(sell);
 
-        TextView note =
-                new TextView(this);
+        // =====================================================
+        // NOTE
+        // =====================================================
 
-        note.setText(
-                "Practice only • Virtual money"
+        TextView note = text(
+                "Practice only • Virtual money",
+                14,
+                Color.GRAY
         );
 
-        note.setTextSize(14);
-        note.setTextColor(Color.GRAY);
         note.setGravity(Gravity.CENTER);
-        note.setPadding(10, 20, 10, 10);
+        note.setPadding(10, 15, 10, 10);
 
         main.addView(note);
+
+        // =====================================================
+        // BOTTOM NAVIGATION
+        // =====================================================
+
+        LinearLayout navigation = new LinearLayout(this);
+
+        navigation.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        navigation.setGravity(Gravity.CENTER);
+        navigation.setPadding(4, 6, 4, 6);
+
+        GradientDrawable navBackground =
+                new GradientDrawable();
+
+        navBackground.setColor(Color.WHITE);
+        navBackground.setCornerRadius(25);
+
+        navigation.setBackground(navBackground);
+
+        Button home = navButton("🏠\nHome");
+        Button trade = navButton("📊\nTrade");
+        Button ai = navButton("🤖\nAI");
+        Button rewards = navButton("🎁\nRewards");
+        Button profile = navButton("👤\nProfile");
+
+        navigation.addView(home);
+        navigation.addView(trade);
+        navigation.addView(ai);
+        navigation.addView(rewards);
+        navigation.addView(profile);
+
+        LinearLayout.LayoutParams navParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        82
+                );
+
+        navParams.setMargins(0, 10, 0, 5);
+
+        main.addView(navigation, navParams);
+
+        // HOME returns to MainActivity
+        home.setOnClickListener(v -> finish());
+
+        // TRADE keeps the user on the trading screen
+        trade.setOnClickListener(v -> showTradingChart());
 
         animateSlide(title);
         animateSlide(chart);
         animateSlide(buy);
         animateSlide(sell);
+        animateSlide(navigation);
     }
 
+    // =========================================================
+    // TRADING BUTTON
+    // =========================================================
+
     private Button tradingButton(
-            String text,
+            String buttonText,
             int color
     ) {
 
-        Button button =
-                new Button(this);
+        Button button = new Button(this);
 
-        button.setText(text);
+        button.setText(buttonText);
         button.setTextSize(17);
         button.setTextColor(Color.WHITE);
         button.setTypeface(
@@ -333,6 +453,12 @@ public class ChartActivity extends Activity {
         );
         button.setAllCaps(false);
         button.setGravity(Gravity.CENTER);
+        button.setIncludeFontPadding(true);
+
+        // Bigger height prevents text from being cut off.
+        button.setMinHeight(90);
+        button.setMinimumHeight(90);
+        button.setPadding(12, 12, 12, 12);
 
         GradientDrawable background =
                 new GradientDrawable();
@@ -344,15 +470,15 @@ public class ChartActivity extends Activity {
 
         LinearLayout.LayoutParams params =
                 new LinearLayout.LayoutParams(
-                        -1,
-                        65
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        90
                 );
 
         params.setMargins(
                 0,
-                5,
+                7,
                 0,
-                5
+                7
         );
 
         button.setLayoutParams(params);
@@ -372,9 +498,11 @@ public class ChartActivity extends Activity {
                     );
 
             animation.setDuration(120);
+
             animation.setRepeatMode(
                     Animation.REVERSE
             );
+
             animation.setRepeatCount(1);
 
             v.startAnimation(animation);
@@ -382,6 +510,72 @@ public class ChartActivity extends Activity {
 
         return button;
     }
+
+    // =========================================================
+    // BOTTOM NAVIGATION BUTTON
+    // =========================================================
+
+    private Button navButton(String value) {
+
+        Button button = new Button(this);
+
+        button.setText(value);
+        button.setTextSize(10);
+        button.setTextColor(DARK);
+        button.setAllCaps(false);
+        button.setGravity(Gravity.CENTER);
+        button.setIncludeFontPadding(true);
+
+        button.setPadding(2, 6, 2, 6);
+
+        GradientDrawable background =
+                new GradientDrawable();
+
+        background.setColor(Color.WHITE);
+        background.setCornerRadius(18);
+
+        button.setBackground(background);
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        0,
+                        70,
+                        1
+                );
+
+        params.setMargins(2, 2, 2, 2);
+
+        button.setLayoutParams(params);
+
+        return button;
+    }
+
+    // =========================================================
+    // TEXT HELPER
+    // =========================================================
+
+    private TextView text(
+            String value,
+            float size,
+            int color
+    ) {
+
+        TextView t = new TextView(this);
+
+        t.setText(value);
+        t.setTextSize(size);
+        t.setTextColor(color);
+
+        // Prevent Android from clipping the tops/bottoms
+        // of letters.
+        t.setIncludeFontPadding(true);
+
+        return t;
+    }
+
+    // =========================================================
+    // ANIMATION
+    // =========================================================
 
     private void animateSlide(View view) {
 
@@ -395,4 +589,4 @@ public class ChartActivity extends Activity {
 
         view.startAnimation(animation);
     }
-}
+                        }
