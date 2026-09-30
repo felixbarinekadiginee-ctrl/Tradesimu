@@ -70,8 +70,8 @@ public class MainActivity extends Activity {
 
         titleBox.addView(welcome);
         titleBox.addView(title);
-
         header.addView(titleBox);
+
         main.addView(header);
 
         animateView(header);
@@ -119,7 +119,6 @@ public class MainActivity extends Activity {
         balanceCard.addView(profit);
 
         main.addView(balanceCard);
-
         animateCard(balanceCard);
 
         // QUICK ACTIONS
@@ -237,7 +236,6 @@ public class MainActivity extends Activity {
         main.addView(message);
 
         scrollView.addView(main);
-
         setContentView(scrollView);
 
         animateLogo(logo);
@@ -269,4 +267,63 @@ public class MainActivity extends Activity {
                         1
                 );
 
-       
+        params.setMargins(3, 3, 3, 3);
+
+        button.setLayoutParams(params);
+
+        animateButton(button);
+
+        return button;
+    }
+
+    private LinearLayout createMarketCard(
+            String name,
+            String price,
+            String change) {
+
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setPadding(18, 15, 18, 15);
+
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(Color.WHITE);
+        background.setCornerRadius(23);
+
+        card.setBackground(background);
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        190,
+                        135
+                );
+
+        params.setMargins(0, 0, 10, 0);
+
+        card.setLayoutParams(params);
+
+        TextView marketName = new TextView(this);
+        marketName.setText(name);
+        marketName.setTextSize(17);
+        marketName.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        marketName.setTextColor(DARK);
+
+        TextView marketPrice = new TextView(this);
+        marketPrice.setText(price);
+        marketPrice.setTextSize(17);
+        marketPrice.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        marketPrice.setTextColor(DARK);
+        marketPrice.setPadding(0, 7, 0, 4);
+
+        TextView marketChange = new TextView(this);
+        marketChange.setText(change);
+        marketChange.setTextSize(14);
+
+        if (change.startsWith("+")) {
+            marketChange.setTextColor(GREEN);
+        } else {
+            marketChange.setTextColor(Color.RED);
+        }
+
+        card.addView(marketName);
+        card.addView(marketPrice);
