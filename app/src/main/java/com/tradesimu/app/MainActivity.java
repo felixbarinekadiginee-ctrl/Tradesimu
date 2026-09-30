@@ -26,21 +26,22 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         showDashboard();
     }
 
     private void showDashboard() {
 
         ScrollView scrollView = new ScrollView(this);
+        scrollView.setFillViewport(true);
         scrollView.setBackgroundColor(LIGHT);
 
         LinearLayout main = new LinearLayout(this);
         main.setOrientation(LinearLayout.VERTICAL);
-        main.setPadding(24, 35, 24, 40);
+        main.setPadding(20, 25, 20, 35);
 
         // HEADER
         LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
 
         ImageView logo = new ImageView(this);
@@ -48,13 +49,13 @@ public class MainActivity extends Activity {
         logo.setAdjustViewBounds(true);
 
         LinearLayout.LayoutParams logoParams =
-                new LinearLayout.LayoutParams(75, 75);
+                new LinearLayout.LayoutParams(65, 65);
 
         header.addView(logo, logoParams);
 
         LinearLayout titleBox = new LinearLayout(this);
         titleBox.setOrientation(LinearLayout.VERTICAL);
-        titleBox.setPadding(15, 0, 0, 0);
+        titleBox.setPadding(12, 0, 0, 0);
 
         TextView welcome = new TextView(this);
         welcome.setText("Welcome to");
@@ -63,7 +64,7 @@ public class MainActivity extends Activity {
 
         TextView title = new TextView(this);
         title.setText("TradeSim");
-        title.setTextSize(27);
+        title.setTextSize(26);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         title.setTextColor(DARK);
 
@@ -76,18 +77,26 @@ public class MainActivity extends Activity {
 
         animateView(header);
 
-        // DASHBOARD TITLE
+        // TITLE
         TextView dashboardTitle = new TextView(this);
         dashboardTitle.setText("Your Trading Dashboard");
-        dashboardTitle.setTextSize(23);
+        dashboardTitle.setTextSize(22);
         dashboardTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         dashboardTitle.setTextColor(DARK);
-        dashboardTitle.setPadding(0, 30, 0, 15);
+        dashboardTitle.setPadding(0, 25, 0, 12);
 
         main.addView(dashboardTitle);
 
         // BALANCE CARD
-        LinearLayout balanceCard = createCard();
+        LinearLayout balanceCard = new LinearLayout(this);
+        balanceCard.setOrientation(LinearLayout.VERTICAL);
+        balanceCard.setPadding(22, 20, 22, 20);
+
+        GradientDrawable balanceBackground = new GradientDrawable();
+        balanceBackground.setColor(Color.rgb(18, 130, 78));
+        balanceBackground.setCornerRadius(28);
+
+        balanceCard.setBackground(balanceBackground);
 
         TextView balanceLabel = new TextView(this);
         balanceLabel.setText("VIRTUAL BALANCE");
@@ -96,21 +105,27 @@ public class MainActivity extends Activity {
 
         TextView balance = new TextView(this);
         balance.setText("$10,000.00");
-        balance.setTextSize(34);
+        balance.setTextSize(31);
         balance.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         balance.setTextColor(Color.WHITE);
-        balance.setPadding(0, 8, 0, 5);
+        balance.setPadding(0, 6, 0, 4);
 
         TextView profit = new TextView(this);
-        profit.setText("+$0.00   (0.00%)");
-        profit.setTextSize(16);
+        profit.setText("+$0.00  (0.00%)");
+        profit.setTextSize(15);
         profit.setTextColor(Color.WHITE);
 
         balanceCard.addView(balanceLabel);
         balanceCard.addView(balance);
         balanceCard.addView(profit);
 
-        main.addView(balanceCard);
+        LinearLayout.LayoutParams balanceParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+        main.addView(balanceCard, balanceParams);
 
         animateCard(balanceCard);
 
@@ -120,12 +135,13 @@ public class MainActivity extends Activity {
         quickTitle.setTextSize(21);
         quickTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         quickTitle.setTextColor(DARK);
-        quickTitle.setPadding(0, 28, 0, 12);
+        quickTitle.setPadding(0, 25, 0, 10);
 
         main.addView(quickTitle);
 
         LinearLayout quickRow = new LinearLayout(this);
         quickRow.setOrientation(LinearLayout.HORIZONTAL);
+        quickRow.setGravity(Gravity.CENTER);
 
         Button chartButton = createActionButton("📈\nCharts");
         Button tutorButton = createActionButton("🤖\nAI Tutor");
@@ -142,15 +158,17 @@ public class MainActivity extends Activity {
         // MARKETS
         TextView marketTitle = new TextView(this);
         marketTitle.setText("Markets");
-        marketTitle.setTextSize(23);
+        marketTitle.setTextSize(22);
         marketTitle.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         marketTitle.setTextColor(DARK);
-        marketTitle.setPadding(0, 30, 0, 12);
+        marketTitle.setPadding(0, 25, 0, 10);
 
         main.addView(marketTitle);
 
         HorizontalScrollView horizontalScroll =
                 new HorizontalScrollView(this);
+
+        horizontalScroll.setHorizontalScrollBarEnabled(false);
 
         LinearLayout markets = new LinearLayout(this);
         markets.setOrientation(LinearLayout.HORIZONTAL);
@@ -180,17 +198,22 @@ public class MainActivity extends Activity {
         ));
 
         horizontalScroll.addView(markets);
-
         main.addView(horizontalScroll);
 
-        // START TRADING BUTTON
+        // START TRADING
         Button startTrading = new Button(this);
         startTrading.setText("START PRACTICING");
-        startTrading.setTextSize(18);
+        startTrading.setTextSize(17);
         startTrading.setTextColor(Color.WHITE);
         startTrading.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         startTrading.setAllCaps(false);
-        startTrading.setBackground(createButtonBackground(GREEN));
+        startTrading.setGravity(Gravity.CENTER);
+
+        GradientDrawable tradingBackground = new GradientDrawable();
+        tradingBackground.setColor(GREEN);
+        tradingBackground.setCornerRadius(35);
+
+        startTrading.setBackground(tradingBackground);
 
         LinearLayout.LayoutParams tradingParams =
                 new LinearLayout.LayoutParams(
@@ -198,13 +221,13 @@ public class MainActivity extends Activity {
                         65
                 );
 
-        tradingParams.setMargins(0, 30, 0, 0);
+        tradingParams.setMargins(0, 25, 0, 0);
 
         main.addView(startTrading, tradingParams);
 
         animateButton(startTrading);
 
-        // EDUCATIONAL MESSAGE
+        // MESSAGE
         TextView message = new TextView(this);
         message.setText(
                 "💡 Practice with virtual money and learn trading without risking real money."
@@ -212,59 +235,44 @@ public class MainActivity extends Activity {
         message.setTextSize(15);
         message.setTextColor(Color.DKGRAY);
         message.setGravity(Gravity.CENTER);
-        message.setPadding(15, 25, 15, 5);
+        message.setLineSpacing(3, 1.0f);
+        message.setPadding(10, 20, 10, 5);
 
         main.addView(message);
 
         scrollView.addView(main);
-
         setContentView(scrollView);
 
-        // Logo animation
         animateLogo(logo);
-    }
-
-    private LinearLayout createCard() {
-
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(25, 25, 25, 25);
-
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.rgb(18, 130, 78));
-        background.setCornerRadius(30);
-
-        card.setBackground(background);
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        150
-                );
-
-        card.setLayoutParams(params);
-
-        return card;
     }
 
     private Button createActionButton(String text) {
 
         Button button = new Button(this);
+
         button.setText(text);
-        button.setTextSize(13);
+        button.setTextSize(12);
         button.setTextColor(DARK);
         button.setAllCaps(false);
+        button.setGravity(Gravity.CENTER);
+        button.setPadding(2, 4, 2, 4);
+        button.setMinHeight(0);
+        button.setMinimumHeight(0);
 
         GradientDrawable background = new GradientDrawable();
         background.setColor(Color.WHITE);
-        background.setCornerRadius(25);
+        background.setCornerRadius(22);
 
         button.setBackground(background);
 
         LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(0, 90, 1);
+                new LinearLayout.LayoutParams(
+                        0,
+                        82,
+                        1
+                );
 
-        params.setMargins(4, 4, 4, 4);
+        params.setMargins(3, 3, 3, 3);
 
         button.setLayoutParams(params);
 
@@ -280,37 +288,41 @@ public class MainActivity extends Activity {
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(22, 18, 22, 18);
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setPadding(18, 15, 18, 15);
 
         GradientDrawable background = new GradientDrawable();
         background.setColor(Color.WHITE);
-        background.setCornerRadius(25);
+        background.setCornerRadius(23);
 
         card.setBackground(background);
 
         LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(210, 145);
+                new LinearLayout.LayoutParams(
+                        190,
+                        135
+                );
 
-        params.setMargins(0, 0, 12, 0);
+        params.setMargins(0, 0, 10, 0);
 
         card.setLayoutParams(params);
 
         TextView marketName = new TextView(this);
         marketName.setText(name);
-        marketName.setTextSize(18);
+        marketName.setTextSize(17);
         marketName.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         marketName.setTextColor(DARK);
 
         TextView marketPrice = new TextView(this);
         marketPrice.setText(price);
-        marketPrice.setTextSize(19);
+        marketPrice.setTextSize(17);
         marketPrice.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         marketPrice.setTextColor(DARK);
-        marketPrice.setPadding(0, 10, 0, 5);
+        marketPrice.setPadding(0, 7, 0, 4);
 
         TextView marketChange = new TextView(this);
         marketChange.setText(change);
-        marketChange.setTextSize(15);
+        marketChange.setTextSize(14);
 
         if (change.startsWith("+")) {
             marketChange.setTextColor(GREEN);
@@ -327,21 +339,12 @@ public class MainActivity extends Activity {
         return card;
     }
 
-    private GradientDrawable createButtonBackground(int color) {
-
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(color);
-        background.setCornerRadius(35);
-
-        return background;
-    }
-
     private void animateLogo(View view) {
 
         ScaleAnimation animation = new ScaleAnimation(
-                0.6f,
+                0.7f,
                 1.0f,
-                0.6f,
+                0.7f,
                 1.0f,
                 Animation.RELATIVE_TO_SELF,
                 0.5f,
@@ -349,7 +352,7 @@ public class MainActivity extends Activity {
                 0.5f
         );
 
-        animation.setDuration(900);
+        animation.setDuration(800);
         animation.setFillAfter(true);
 
         view.startAnimation(animation);
@@ -368,9 +371,9 @@ public class MainActivity extends Activity {
     private void animateCard(View view) {
 
         ScaleAnimation animation = new ScaleAnimation(
-                0.95f,
+                0.96f,
                 1.0f,
-                0.95f,
+                0.96f,
                 1.0f,
                 Animation.RELATIVE_TO_SELF,
                 0.5f,
