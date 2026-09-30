@@ -6,6 +6,8 @@ import android.graphics.*;
 import android.graphics.drawable.GradientDrawable;
 import android.view.*;
 import android.view.animation.*;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.widget.*;
 import android.text.InputType;
 import android.content.Context;
@@ -23,7 +25,6 @@ public class WelcomeActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         showWelcome();
     }
 
@@ -51,8 +52,8 @@ public class WelcomeActivity extends Activity {
 
         LinearLayout.LayoutParams logoParams =
                 new LinearLayout.LayoutParams(dp(145), dp(145));
-        logoParams.setMargins(0, 0, 0, dp(15));
 
+        logoParams.setMargins(0, 0, 0, dp(15));
         content.addView(logo, logoParams);
 
         animateLogo(logo);
@@ -60,7 +61,6 @@ public class WelcomeActivity extends Activity {
         TextView title = text("Welcome to TradeSim", 30, WHITE);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         title.setGravity(Gravity.CENTER);
-
         content.addView(title);
 
         TextView subtitle = text(
@@ -68,13 +68,12 @@ public class WelcomeActivity extends Activity {
                 17,
                 Color.rgb(190, 235, 215)
         );
+
         subtitle.setGravity(Gravity.CENTER);
         subtitle.setPadding(0, dp(8), 0, dp(35));
-
         content.addView(subtitle);
 
         Button signIn = greenButton("Sign In");
-
         Button signUp = outlineButton("Sign Up");
 
         content.addView(signIn, buttonParams());
@@ -110,7 +109,6 @@ public class WelcomeActivity extends Activity {
         ));
 
         TextView back = text("← Back", 17, Color.rgb(180, 240, 210));
-        back.setGravity(Gravity.LEFT);
         back.setPadding(0, 0, 0, dp(25));
 
         content.addView(back,
@@ -133,7 +131,6 @@ public class WelcomeActivity extends Activity {
         TextView title = text("Sign In", 30, WHITE);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         title.setGravity(Gravity.CENTER);
-
         content.addView(title);
 
         TextView subtitle = text(
@@ -141,9 +138,9 @@ public class WelcomeActivity extends Activity {
                 16,
                 Color.rgb(185, 225, 205)
         );
+
         subtitle.setGravity(Gravity.CENTER);
         subtitle.setPadding(0, dp(7), 0, dp(25));
-
         content.addView(subtitle);
 
         EditText email = input("Email");
@@ -158,7 +155,6 @@ public class WelcomeActivity extends Activity {
         content.addView(password, inputParams());
 
         Button login = greenButton("Sign In");
-
         content.addView(login, buttonParams());
 
         login.setOnClickListener(v -> {
@@ -190,9 +186,9 @@ public class WelcomeActivity extends Activity {
                 15,
                 Color.rgb(190, 240, 215)
         );
+
         create.setGravity(Gravity.CENTER);
         create.setPadding(0, dp(18), 0, dp(10));
-
         content.addView(create);
 
         create.setOnClickListener(v -> showSignUp());
@@ -223,7 +219,12 @@ public class WelcomeActivity extends Activity {
                 FrameLayout.LayoutParams.MATCH_PARENT
         ));
 
-        TextView back = text("← Back", 17, Color.rgb(180, 240, 210));
+        TextView back = text(
+                "← Back",
+                17,
+                Color.rgb(180, 240, 210)
+        );
+
         back.setPadding(0, 0, 0, dp(25));
 
         content.addView(back,
@@ -243,10 +244,14 @@ public class WelcomeActivity extends Activity {
 
         animateLogo(logo);
 
-        TextView title = text("Create Your Account", 28, WHITE);
+        TextView title = text(
+                "Create Your Account",
+                28,
+                WHITE
+        );
+
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         title.setGravity(Gravity.CENTER);
-
         content.addView(title);
 
         TextView subtitle = text(
@@ -254,13 +259,12 @@ public class WelcomeActivity extends Activity {
                 16,
                 Color.rgb(185, 225, 205)
         );
+
         subtitle.setGravity(Gravity.CENTER);
         subtitle.setPadding(0, dp(7), 0, dp(25));
-
         content.addView(subtitle);
 
         EditText name = input("Full Name");
-
         EditText email = input("Email");
 
         EditText password = input("Password");
@@ -281,7 +285,6 @@ public class WelcomeActivity extends Activity {
         content.addView(confirm, inputParams());
 
         Button signUp = greenButton("Create Account");
-
         content.addView(signUp, buttonParams());
 
         signUp.setOnClickListener(v -> {
@@ -324,9 +327,9 @@ public class WelcomeActivity extends Activity {
                 15,
                 Color.rgb(190, 240, 215)
         );
+
         login.setGravity(Gravity.CENTER);
         login.setPadding(0, dp(18), 0, dp(10));
-
         content.addView(login);
 
         login.setOnClickListener(v -> showLogin());
@@ -335,7 +338,7 @@ public class WelcomeActivity extends Activity {
     }
 
     // =========================
-    // ANIMATED BACKGROUND
+    // ANIMATED GREEN BACKGROUND
     // =========================
 
     private FrameLayout createBackground() {
@@ -354,7 +357,8 @@ public class WelcomeActivity extends Activity {
 
         frame.setBackground(gradient);
 
-        TradingBackground chart = new TradingBackground(this);
+        TradingBackground chart =
+                new TradingBackground(this);
 
         frame.addView(chart,
                 new FrameLayout.LayoutParams(
@@ -366,7 +370,7 @@ public class WelcomeActivity extends Activity {
     }
 
     // =========================
-    // ANIMATIONS
+    // LOGO ANIMATION
     // =========================
 
     private void animateLogo(View logo) {
@@ -384,10 +388,22 @@ public class WelcomeActivity extends Activity {
                 .start();
 
         ObjectAnimator pulseX =
-                ObjectAnimator.ofFloat(logo, "scaleX", 1f, 1.06f, 1f);
+                ObjectAnimator.ofFloat(
+                        logo,
+                        "scaleX",
+                        1f,
+                        1.06f,
+                        1f
+                );
 
         ObjectAnimator pulseY =
-                ObjectAnimator.ofFloat(logo, "scaleY", 1f, 1.06f, 1f);
+                ObjectAnimator.ofFloat(
+                        logo,
+                        "scaleY",
+                        1f,
+                        1.06f,
+                        1f
+                );
 
         pulseX.setDuration(2200);
         pulseY.setDuration(2200);
@@ -400,10 +416,14 @@ public class WelcomeActivity extends Activity {
     }
 
     // =========================
-    // UI HELPERS
+    // TEXT
     // =========================
 
-    private TextView text(String value, float size, int color) {
+    private TextView text(
+            String value,
+            float size,
+            int color
+    ) {
 
         TextView t = new TextView(this);
 
@@ -415,21 +435,43 @@ public class WelcomeActivity extends Activity {
         return t;
     }
 
+    // =========================
+    // INPUT BOX
+    // =========================
+
     private EditText input(String hint) {
 
         EditText e = new EditText(this);
 
         e.setHint(hint);
-        e.setHintTextColor(Color.rgb(150, 190, 170));
+        e.setHintTextColor(
+                Color.rgb(150, 190, 170)
+        );
+
         e.setTextColor(Color.WHITE);
         e.setTextSize(16);
         e.setSingleLine(true);
-        e.setPadding(dp(18), dp(12), dp(18), dp(12));
 
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.argb(80, 0, 70, 45));
+        e.setPadding(
+                dp(18),
+                dp(12),
+                dp(18),
+                dp(12)
+        );
+
+        GradientDrawable background =
+                new GradientDrawable();
+
+        background.setColor(
+                Color.argb(80, 0, 70, 45)
+        );
+
         background.setCornerRadius(dp(16));
-        background.setStroke(dp(1), Color.argb(130, 0, 220, 120));
+
+        background.setStroke(
+                dp(1),
+                Color.argb(130, 0, 220, 120)
+        );
 
         e.setBackground(background);
 
@@ -444,10 +486,19 @@ public class WelcomeActivity extends Activity {
                         dp(58)
                 );
 
-        p.setMargins(0, 0, 0, dp(13));
+        p.setMargins(
+                0,
+                0,
+                0,
+                dp(13)
+        );
 
         return p;
     }
+
+    // =========================
+    // GREEN BUTTON
+    // =========================
 
     private Button greenButton(String value) {
 
@@ -456,14 +507,27 @@ public class WelcomeActivity extends Activity {
         b.setText(value);
         b.setTextSize(17);
         b.setTextColor(Color.BLACK);
-        b.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+        b.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
         b.setAllCaps(false);
         b.setGravity(Gravity.CENTER);
         b.setIncludeFontPadding(true);
-        b.setMinHeight(dp(56));
-        b.setPadding(dp(15), dp(8), dp(15), dp(8));
 
-        GradientDrawable bg = new GradientDrawable();
+        b.setMinHeight(dp(56));
+
+        b.setPadding(
+                dp(15),
+                dp(8),
+                dp(15),
+                dp(8)
+        );
+
+        GradientDrawable bg =
+                new GradientDrawable();
 
         bg.setColor(GREEN);
         bg.setCornerRadius(dp(30));
@@ -473,6 +537,10 @@ public class WelcomeActivity extends Activity {
         return b;
     }
 
+    // =========================
+    // OUTLINE BUTTON
+    // =========================
+
     private Button outlineButton(String value) {
 
         Button b = new Button(this);
@@ -480,18 +548,38 @@ public class WelcomeActivity extends Activity {
         b.setText(value);
         b.setTextSize(17);
         b.setTextColor(GREEN);
-        b.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+        b.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
         b.setAllCaps(false);
         b.setGravity(Gravity.CENTER);
         b.setIncludeFontPadding(true);
+
         b.setMinHeight(dp(56));
-        b.setPadding(dp(15), dp(8), dp(15), dp(8));
 
-        GradientDrawable bg = new GradientDrawable();
+        b.setPadding(
+                dp(15),
+                dp(8),
+                dp(15),
+                dp(8)
+        );
 
-        bg.setColor(Color.argb(35, 0, 220, 120));
+        GradientDrawable bg =
+                new GradientDrawable();
+
+        bg.setColor(
+                Color.argb(35, 0, 220, 120)
+        );
+
         bg.setCornerRadius(dp(30));
-        bg.setStroke(dp(2), GREEN);
+
+        bg.setStroke(
+                dp(2),
+                GREEN
+        );
 
         b.setBackground(bg);
 
@@ -506,10 +594,19 @@ public class WelcomeActivity extends Activity {
                         dp(58)
                 );
 
-        p.setMargins(0, 0, 0, dp(14));
+        p.setMargins(
+                0,
+                0,
+                0,
+                dp(14)
+        );
 
         return p;
     }
+
+    // =========================
+    // DP HELPER
+    // =========================
 
     private int dp(int value) {
 
@@ -523,24 +620,39 @@ public class WelcomeActivity extends Activity {
     }
 
     // =========================
-    // ANIMATED TRADING CHART
+    // ANIMATED TRADING BACKGROUND
     // =========================
 
-    private static class TradingBackground extends View {
+    private static class TradingBackground
+            extends View {
 
-        private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private Paint paint =
+                new Paint(Paint.ANTI_ALIAS_FLAG);
 
         private float offset = 0;
 
         private Path path = new Path();
 
-        public TradingBackground(Context context) {
+        public TradingBackground(
+                Context context
+        ) {
 
             super(context);
 
-            paint.setStyle(Paint.Style.STROKE);
+            paint.setStyle(
+                    Paint.Style.STROKE
+            );
+
             paint.setStrokeWidth(3);
-            paint.setColor(Color.argb(55, 0, 255, 130));
+
+            paint.setColor(
+                    Color.argb(
+                            55,
+                            0,
+                            255,
+                            130
+                    )
+            );
 
             animateChart();
         }
@@ -548,18 +660,32 @@ public class WelcomeActivity extends Activity {
         private void animateChart() {
 
             ValueAnimator animator =
-                    ValueAnimator.ofFloat(0, 1000);
+                    ValueAnimator.ofFloat(
+                            0,
+                            1000
+                    );
 
             animator.setDuration(8000);
-            animator.setRepeatCount(ValueAnimator.INFINITE);
-            animator.setInterpolator(new LinearInterpolator());
 
-            animator.addUpdateListener(animation -> {
+            animator.setRepeatCount(
+                    ValueAnimator.INFINITE
+            );
 
-                offset = (float) animation.getAnimatedValue();
+            animator.setInterpolator(
+                    new LinearInterpolator()
+            );
 
-                invalidate();
-            });
+            animator.addUpdateListener(
+                    animation -> {
+
+                        offset =
+                                (float)
+                                animation
+                                .getAnimatedValue();
+
+                        invalidate();
+                    }
+            );
 
             animator.start();
         }
@@ -574,20 +700,31 @@ public class WelcomeActivity extends Activity {
 
             path.reset();
 
-            float startX = -200 + (offset % 200);
-
-            path.moveTo(startX, height * 0.72f);
+            float startX =
+                    -200 +
+                    (offset % 200);
 
             for (int i = 0; i < 14; i++) {
 
-                float x = startX + i * (width / 8f);
+                float x =
+                        startX +
+                        i *
+                        (width / 8f);
 
                 float y =
                         height * 0.72f
-                        - (float)
-                        Math.sin(i * 0.9 + offset * 0.01)
+                        -
+                        (float)
+                        Math.sin(
+                                i * 0.9
+                                +
+                                offset * 0.01
+                        )
                         * height * 0.08f
-                        - i * height * 0.018f;
+                        -
+                        i *
+                        height *
+                        0.018f;
 
                 if (i == 0) {
                     path.moveTo(x, y);
@@ -596,13 +733,20 @@ public class WelcomeActivity extends Activity {
                 }
             }
 
-            canvas.drawPath(path, paint);
+            paint.setStrokeWidth(3);
+
+            canvas.drawPath(
+                    path,
+                    paint
+            );
 
             paint.setStrokeWidth(1);
 
+            // Horizontal trading-grid lines
             for (int i = 1; i < 7; i++) {
 
-                float y = height * i / 7f;
+                float y =
+                        height * i / 7f;
 
                 canvas.drawLine(
                         0,
@@ -613,9 +757,11 @@ public class WelcomeActivity extends Activity {
                 );
             }
 
+            // Vertical trading-grid lines
             for (int i = 1; i < 5; i++) {
 
-                float x = width * i / 5f;
+                float x =
+                        width * i / 5f;
 
                 canvas.drawLine(
                         x,
@@ -627,4 +773,4 @@ public class WelcomeActivity extends Activity {
             }
         }
     }
-                     }
+                          }
