@@ -72,12 +72,11 @@ public class MainActivity extends Activity {
         titleBox.addView(title);
 
         header.addView(titleBox);
-
         main.addView(header);
 
         animateView(header);
 
-        // TITLE
+        // DASHBOARD TITLE
         TextView dashboardTitle = new TextView(this);
         dashboardTitle.setText("Your Trading Dashboard");
         dashboardTitle.setTextSize(22);
@@ -119,13 +118,7 @@ public class MainActivity extends Activity {
         balanceCard.addView(balance);
         balanceCard.addView(profit);
 
-        LinearLayout.LayoutParams balanceParams =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-        main.addView(balanceCard, balanceParams);
+        main.addView(balanceCard);
 
         animateCard(balanceCard);
 
@@ -200,7 +193,7 @@ public class MainActivity extends Activity {
         horizontalScroll.addView(markets);
         main.addView(horizontalScroll);
 
-        // START TRADING
+        // START PRACTICING BUTTON
         Button startTrading = new Button(this);
         startTrading.setText("START PRACTICING");
         startTrading.setTextSize(17);
@@ -208,6 +201,9 @@ public class MainActivity extends Activity {
         startTrading.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         startTrading.setAllCaps(false);
         startTrading.setGravity(Gravity.CENTER);
+        startTrading.setMinHeight(70);
+        startTrading.setMinimumHeight(70);
+        startTrading.setPadding(20, 15, 20, 15);
 
         GradientDrawable tradingBackground = new GradientDrawable();
         tradingBackground.setColor(GREEN);
@@ -218,7 +214,7 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams tradingParams =
                 new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        65
+                        LinearLayout.LayoutParams.WRAP_CONTENT
                 );
 
         tradingParams.setMargins(0, 25, 0, 0);
@@ -227,7 +223,7 @@ public class MainActivity extends Activity {
 
         animateButton(startTrading);
 
-        // MESSAGE
+        // EDUCATIONAL MESSAGE
         TextView message = new TextView(this);
         message.setText(
                 "💡 Practice with virtual money and learn trading without risking real money."
@@ -241,6 +237,7 @@ public class MainActivity extends Activity {
         main.addView(message);
 
         scrollView.addView(main);
+
         setContentView(scrollView);
 
         animateLogo(logo);
@@ -272,141 +269,4 @@ public class MainActivity extends Activity {
                         1
                 );
 
-        params.setMargins(3, 3, 3, 3);
-
-        button.setLayoutParams(params);
-
-        animateButton(button);
-
-        return button;
-    }
-
-    private LinearLayout createMarketCard(
-            String name,
-            String price,
-            String change) {
-
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setPadding(18, 15, 18, 15);
-
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.WHITE);
-        background.setCornerRadius(23);
-
-        card.setBackground(background);
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        190,
-                        135
-                );
-
-        params.setMargins(0, 0, 10, 0);
-
-        card.setLayoutParams(params);
-
-        TextView marketName = new TextView(this);
-        marketName.setText(name);
-        marketName.setTextSize(17);
-        marketName.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        marketName.setTextColor(DARK);
-
-        TextView marketPrice = new TextView(this);
-        marketPrice.setText(price);
-        marketPrice.setTextSize(17);
-        marketPrice.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        marketPrice.setTextColor(DARK);
-        marketPrice.setPadding(0, 7, 0, 4);
-
-        TextView marketChange = new TextView(this);
-        marketChange.setText(change);
-        marketChange.setTextSize(14);
-
-        if (change.startsWith("+")) {
-            marketChange.setTextColor(GREEN);
-        } else {
-            marketChange.setTextColor(Color.RED);
-        }
-
-        card.addView(marketName);
-        card.addView(marketPrice);
-        card.addView(marketChange);
-
-        animateCard(card);
-
-        return card;
-    }
-
-    private void animateLogo(View view) {
-
-        ScaleAnimation animation = new ScaleAnimation(
-                0.7f,
-                1.0f,
-                0.7f,
-                1.0f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f
-        );
-
-        animation.setDuration(800);
-        animation.setFillAfter(true);
-
-        view.startAnimation(animation);
-    }
-
-    private void animateView(View view) {
-
-        AlphaAnimation animation =
-                new AlphaAnimation(0.0f, 1.0f);
-
-        animation.setDuration(700);
-
-        view.startAnimation(animation);
-    }
-
-    private void animateCard(View view) {
-
-        ScaleAnimation animation = new ScaleAnimation(
-                0.96f,
-                1.0f,
-                0.96f,
-                1.0f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f
-        );
-
-        animation.setDuration(500);
-        animation.setFillAfter(true);
-
-        view.startAnimation(animation);
-    }
-
-    private void animateButton(View view) {
-
-        view.setOnClickListener(v -> {
-
-            ScaleAnimation animation = new ScaleAnimation(
-                    1.0f,
-                    0.92f,
-                    1.0f,
-                    0.92f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f
-            );
-
-            animation.setDuration(120);
-            animation.setRepeatMode(Animation.REVERSE);
-            animation.setRepeatCount(1);
-
-            v.startAnimation(animation);
-        });
-    }
-            }
+       
