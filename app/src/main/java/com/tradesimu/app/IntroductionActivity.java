@@ -5,31 +5,36 @@ import android.os.Bundle;
 import android.graphics.*;
 import android.graphics.drawable.GradientDrawable;
 import android.view.*;
-import android.view.animation.*;
 import android.widget.*;
 import android.content.Intent;
 import android.content.Context;
 import android.animation.ValueAnimator;
 
 public class IntroductionActivity extends Activity {
-    private final int GREEN = Color.rgb(0, 220, 120);
-    private final int DARK_GREEN = Color.rgb(3, 25, 18);
-    private final int BLACK_GREEN = Color.rgb(2, 12, 9);
-    private final int WHITE = Color.WHITE;
+
+    private final int GREEN = Color.rgb(0, 180, 95);
+    private final int DARK_GREEN = Color.rgb(2, 18, 12);
+    private final int BLACK_GREEN = Color.rgb(1, 8, 6);
+
+    private final int TEXT_MAIN = Color.rgb(205, 220, 212);
+    private final int TEXT_SECONDARY = Color.rgb(145, 165, 155);
 
     private FrameLayout root;
     private LinearLayout content;
+
     private int page = 0;
 
-    private String[] titles = {
+    private final String[] titles = {
             "Understand the Market",
             "Practice With Virtual Money",
             "Make Your First Practice Trade"
     };
 
-    private String[] descriptions = {
+    private final String[] descriptions = {
             "Learn how markets work, understand price movements, and build your trading knowledge step by step.",
+
             "Practice trading without risking real money. Use virtual funds to learn, experiment, and improve.",
+
             "Put what you've learned into practice. Make your first virtual trade and start building your trading skills."
     };
 
@@ -43,6 +48,7 @@ public class IntroductionActivity extends Activity {
 
         root = new FrameLayout(this);
 
+        // Dark animated trading background
         root.addView(
                 new TradingBackground(this),
                 new FrameLayout.LayoutParams(
@@ -54,11 +60,12 @@ public class IntroductionActivity extends Activity {
         content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_HORIZONTAL);
+
         content.setPadding(
-                dp(28),
+                dp(30),
                 dp(45),
-                dp(28),
-                dp(35)
+                dp(30),
+                dp(30)
         );
 
         ScrollView scrollView = new ScrollView(this);
@@ -74,66 +81,87 @@ public class IntroductionActivity extends Activity {
                 )
         );
 
-        TextView logo = textView(
+        // TradeSim name
+        TextView logoText = textView(
                 "TradeSim",
-                34,
+                28,
                 GREEN,
                 Gravity.CENTER
         );
 
-        logo.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        logoText.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
 
         content.addView(
-                logo,
+                logoText,
                 new LinearLayout.LayoutParams(
                         -1,
-                        dp(55)
+                        dp(45)
                 )
         );
 
-        TextView step = textView(
-                "STEP " + (page + 1) + " OF 3",
+        // Small progress indicator
+        TextView progressText = textView(
+                (page + 1) + " / 3",
                 13,
-                Color.LTGRAY,
+                TEXT_SECONDARY,
                 Gravity.CENTER
         );
 
-        LinearLayout.LayoutParams stepParams =
+        LinearLayout.LayoutParams progressParams =
                 new LinearLayout.LayoutParams(
                         -1,
-                        dp(40)
+                        dp(35)
                 );
 
-        stepParams.topMargin = dp(18);
+        progressParams.topMargin = dp(20);
 
-        content.addView(step, stepParams);
+        content.addView(
+                progressText,
+                progressParams
+        );
 
+        // Smaller, dimmer icon
         TextView icon = textView(
-                page == 0 ? "📈" :
-                        page == 1 ? "💰" : "🎯",
-                65,
-                WHITE,
+                page == 0
+                        ? "📈"
+                        : page == 1
+                        ? "💰"
+                        : "🎯",
+                48,
+                TEXT_MAIN,
                 Gravity.CENTER
         );
 
         LinearLayout.LayoutParams iconParams =
                 new LinearLayout.LayoutParams(
                         -1,
-                        dp(100)
+                        dp(80)
                 );
 
-        iconParams.topMargin = dp(35);
+        iconParams.topMargin = dp(25);
 
-        content.addView(icon, iconParams);
+        content.addView(
+                icon,
+                iconParams
+        );
 
+        // Main title
         TextView title = textView(
                 titles[page],
-                28,
-                WHITE,
+                25,
+                TEXT_MAIN,
                 Gravity.CENTER
         );
 
-        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        title.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
+        title.setIncludeFontPadding(true);
 
         LinearLayout.LayoutParams titleParams =
                 new LinearLayout.LayoutParams(
@@ -143,16 +171,23 @@ public class IntroductionActivity extends Activity {
 
         titleParams.topMargin = dp(20);
 
-        content.addView(title, titleParams);
+        content.addView(
+                title,
+                titleParams
+        );
 
+        // Description
         TextView description = textView(
                 descriptions[page],
-                17,
-                Color.rgb(220, 240, 232),
+                16,
+                TEXT_SECONDARY,
                 Gravity.CENTER
         );
 
-        description.setLineSpacing(dp(5), 1.0f);
+        description.setLineSpacing(
+                dp(4),
+                1.0f
+        );
 
         LinearLayout.LayoutParams descriptionParams =
                 new LinearLayout.LayoutParams(
@@ -160,10 +195,14 @@ public class IntroductionActivity extends Activity {
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
 
-        descriptionParams.topMargin = dp(20);
+        descriptionParams.topMargin = dp(18);
 
-        content.addView(description, descriptionParams);
+        content.addView(
+                description,
+                descriptionParams
+        );
 
+        // Push controls toward bottom
         Space space = new Space(this);
 
         content.addView(
@@ -175,6 +214,7 @@ public class IntroductionActivity extends Activity {
                 )
         );
 
+        // Page dots
         LinearLayout dots = new LinearLayout(this);
         dots.setGravity(Gravity.CENTER);
 
@@ -193,7 +233,7 @@ public class IntroductionActivity extends Activity {
                 dotBackground.setColor(GREEN);
             } else {
                 dotBackground.setColor(
-                        Color.rgb(70, 100, 88)
+                        Color.rgb(45, 65, 55)
                 );
             }
 
@@ -201,8 +241,8 @@ public class IntroductionActivity extends Activity {
 
             LinearLayout.LayoutParams dotParams =
                     new LinearLayout.LayoutParams(
-                            dp(i == page ? 24 : 9),
-                            dp(9)
+                            dp(i == page ? 20 : 7),
+                            dp(7)
                     );
 
             dotParams.setMargins(
@@ -219,11 +259,12 @@ public class IntroductionActivity extends Activity {
                 dots,
                 new LinearLayout.LayoutParams(
                         -1,
-                        dp(25)
+                        dp(20)
                 )
         );
 
-        Button actionButton = button(
+        // Continue / Start button
+        Button actionButton = createButton(
                 page == 2
                         ? "START PRACTICING"
                         : "CONTINUE"
@@ -232,10 +273,10 @@ public class IntroductionActivity extends Activity {
         LinearLayout.LayoutParams buttonParams =
                 new LinearLayout.LayoutParams(
                         -1,
-                        dp(58)
+                        dp(55)
                 );
 
-        buttonParams.topMargin = dp(25);
+        buttonParams.topMargin = dp(22);
 
         content.addView(
                 actionButton,
@@ -243,10 +284,15 @@ public class IntroductionActivity extends Activity {
         );
 
         actionButton.setOnClickListener(v -> {
+
             if (page < 2) {
+
                 page++;
+
                 showPage();
+
             } else {
+
                 Intent intent =
                         new Intent(
                                 IntroductionActivity.this,
@@ -254,6 +300,7 @@ public class IntroductionActivity extends Activity {
                         );
 
                 startActivity(intent);
+
                 finish();
             }
         });
@@ -264,17 +311,19 @@ public class IntroductionActivity extends Activity {
 
         root.animate()
                 .alpha(1f)
-                .setDuration(500)
+                .setDuration(450)
                 .start();
     }
 
-    private Button button(String text) {
+    private Button createButton(String text) {
 
         Button button = new Button(this);
 
         button.setText(text);
-        button.setTextColor(BLACK_GREEN);
-        button.setTextSize(15);
+        button.setTextSize(14);
+        button.setTextColor(
+                Color.rgb(1, 15, 9)
+        );
 
         button.setTypeface(
                 Typeface.DEFAULT,
@@ -282,16 +331,16 @@ public class IntroductionActivity extends Activity {
         );
 
         button.setAllCaps(false);
-        button.setGravity(Gravity.CENTER);
 
         GradientDrawable background =
                 new GradientDrawable();
 
         background.setColor(GREEN);
-        background.setCornerRadius(dp(18));
+        background.setCornerRadius(
+                dp(16)
+        );
 
         button.setBackground(background);
-        button.setElevation(dp(5));
 
         return button;
     }
@@ -318,23 +367,22 @@ public class IntroductionActivity extends Activity {
 
         return (int) (
                 value *
-                getResources()
-                        .getDisplayMetrics()
-                        .density
+                        getResources()
+                                .getDisplayMetrics()
+                                .density
         );
     }
 
     private class TradingBackground extends View {
 
-        private Paint paint =
+        private final Paint paint =
                 new Paint(Paint.ANTI_ALIAS_FLAG);
 
         private float progress = 0f;
 
         public TradingBackground(Context context) {
-            super(context);
 
-            paint.setStrokeWidth(dp(2));
+            super(context);
 
             ValueAnimator animator =
                     ValueAnimator.ofFloat(
@@ -342,7 +390,7 @@ public class IntroductionActivity extends Activity {
                             1f
                     );
 
-            animator.setDuration(5000);
+            animator.setDuration(7000);
 
             animator.setRepeatCount(
                     ValueAnimator.INFINITE
@@ -357,7 +405,8 @@ public class IntroductionActivity extends Activity {
 
                         progress =
                                 (float)
-                                        animation.getAnimatedValue();
+                                        animation
+                                                .getAnimatedValue();
 
                         invalidate();
                     }
@@ -374,6 +423,7 @@ public class IntroductionActivity extends Activity {
             int width = getWidth();
             int height = getHeight();
 
+            // Very dark green gradient
             LinearGradient gradient =
                     new LinearGradient(
                             0,
@@ -397,24 +447,26 @@ public class IntroductionActivity extends Activity {
 
             paint.setShader(null);
 
+            // Very subtle grid
             paint.setColor(
                     Color.argb(
-                            35,
+                            18,
                             0,
-                            220,
-                            120
+                            180,
+                            95
                     )
             );
 
             paint.setStrokeWidth(1);
 
-            int spacing = dp(45);
+            int spacing = dp(55);
 
             for (
                     int x = 0;
                     x < width;
                     x += spacing
             ) {
+
                 canvas.drawLine(
                         x,
                         0,
@@ -429,6 +481,7 @@ public class IntroductionActivity extends Activity {
                     y < height;
                     y += spacing
             ) {
+
                 canvas.drawLine(
                         0,
                         y,
@@ -438,14 +491,28 @@ public class IntroductionActivity extends Activity {
                 );
             }
 
-            paint.setColor(GREEN);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(dp(2));
+            // Dim animated trading line
+            paint.setColor(
+                    Color.argb(
+                            75,
+                            0,
+                            190,
+                            100
+                    )
+            );
+
+            paint.setStyle(
+                    Paint.Style.STROKE
+            );
+
+            paint.setStrokeWidth(
+                    dp(2)
+            );
 
             Path chart = new Path();
 
             float baseY =
-                    height * 0.72f;
+                    height * 0.74f;
 
             chart.moveTo(
                     0,
@@ -461,22 +528,22 @@ public class IntroductionActivity extends Activity {
                 float wave =
                         (float)
                                 Math.sin(
-                                        x * 0.025
+                                        x * 0.024
                                                 + progress * 6.28
                                 );
 
                 float wave2 =
                         (float)
                                 Math.sin(
-                                        x * 0.011
+                                        x * 0.010
                                                 + progress * 4
                                 );
 
                 float y =
                         baseY
-                                - wave * dp(22)
-                                - wave2 * dp(18)
-                                - (x * 0.10f);
+                                - wave * dp(18)
+                                - wave2 * dp(12)
+                                - (x * 0.07f);
 
                 chart.lineTo(
                         x,
@@ -489,35 +556,37 @@ public class IntroductionActivity extends Activity {
                     paint
             );
 
-            paint.setStyle(Paint.Style.FILL);
+            paint.setStyle(
+                    Paint.Style.FILL
+            );
 
+            // Very subtle glow
             float pulse =
                     (float)
                             (
                                     0.5
                                             + 0.5
                                             * Math.sin(
-                                                    progress
-                                                            * 6.28
+                                                    progress * 6.28
                                             )
                             );
 
             paint.setColor(
                     Color.argb(
                             (int)
-                                    (35 + pulse * 45),
+                                    (12 + pulse * 15),
                             0,
-                            220,
-                            120
+                            180,
+                            95
                     )
             );
 
             canvas.drawCircle(
                     width / 2f,
-                    height * 0.38f,
-                    dp(85),
+                    height * 0.42f,
+                    dp(90),
                     paint
             );
         }
     }
-            }
+    }
