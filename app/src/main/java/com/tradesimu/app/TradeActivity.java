@@ -1,137 +1,150 @@
 package com.tradesimu.app;
 
 import android.app.Activity;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Canvas;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Space;
+import android.widget.TextView;
 
 public class TradeActivity extends Activity {
 
-    int green = Color.rgb(0,210,115);
-    int card = Color.rgb(5,72,42);
-    int dark = Color.rgb(3,15,10);
+    private final int GREEN = Color.rgb(0, 210, 115);
+    private final int DARK = Color.rgb(3, 15, 10);
+    private final int CARD = Color.rgb(5, 72, 42);
 
-    int dp(float n) {
-        return (int)(n * getResources().getDisplayMetrics().density + .5f);
+    private int dp(int n) {
+        return (int) (n * getResources()
+                .getDisplayMetrics().density + 0.5f);
     }
 
-    TextView text(String s, float size) {
-        TextView t = new TextView(this);
-        t.setText(s);
-        t.setTextColor(green);
-        t.setTextSize(size);
-        t.setGravity(Gravity.CENTER_VERTICAL);
-        return t;
-    }
-
-    GradientView box() {
-        GradientView v = new GradientView();
-        v.setBackgroundColor(card);
+    private TextView label(String text, float size) {
+        TextView v = new TextView(this);
+        v.setText(text);
+        v.setTextColor(GREEN);
+        v.setTextSize(size);
+        v.setGravity(Gravity.CENTER_VERTICAL);
         return v;
     }
 
     @Override
-    protected void onCreate(Bundle b) {
-        super.onCreate(b);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(dark);
-        root.setPadding(dp(16), dp(14), dp(16), 0);
+        root.setBackgroundColor(DARK);
+        root.setPadding(dp(16), dp(12), dp(16), 0);
 
         // TOP BAR
         LinearLayout top = new LinearLayout(this);
         top.setGravity(Gravity.CENTER_VERTICAL);
 
-        TextView profile = text("●", 26);
-        TextView title = text("Trade", 22);
+        TextView profile = label("●", 25);
+        TextView title = label("Trade", 22);
         title.setTypeface(null, 1);
 
-        TextView bell = text("♧", 25);
+        TextView bell = label("♧", 24);
         bell.setGravity(Gravity.CENTER);
 
-        top.addView(profile, new LinearLayout.LayoutParams(dp(45), dp(50)));
-        top.addView(title, new LinearLayout.LayoutParams(0, dp(50), 1));
-        top.addView(bell, new LinearLayout.LayoutParams(dp(45), dp(50)));
+        top.addView(profile,
+                new LinearLayout.LayoutParams(dp(45), dp(50)));
+
+        top.addView(title,
+                new LinearLayout.LayoutParams(0, dp(50), 1));
+
+        top.addView(bell,
+                new LinearLayout.LayoutParams(dp(45), dp(50)));
 
         root.addView(top);
 
-        // COIN CARD
-        LinearLayout coin = box();
+        // BTC CARD
+        LinearLayout coin = new LinearLayout(this);
         coin.setOrientation(LinearLayout.VERTICAL);
-        coin.setPadding(dp(16), dp(10), dp(16), dp(10));
+        coin.setPadding(dp(16), dp(8), dp(16), dp(8));
+        coin.setBackgroundColor(CARD);
 
-        TextView btc = text("BTC / USD", 18);
-        btc.setTypeface(null, 1);
+        TextView pair = label("BTC / USD", 17);
+        pair.setTypeface(null, 1);
 
-        TextView price = text("$63,240.32", 27);
+        TextView price = label("$63,240.32", 26);
         price.setTypeface(null, 1);
 
-        TextView change = text("+2.48%   Today", 14);
+        TextView change = label("+2.48%   Today", 14);
 
-        coin.addView(btc);
+        coin.addView(pair);
         coin.addView(price);
         coin.addView(change);
 
         root.addView(coin,
                 new LinearLayout.LayoutParams(-1, dp(105)));
 
-        Space sp = new Space(this);
-        root.addView(sp, new LinearLayout.LayoutParams(1, dp(12)));
+        Space gap1 = new Space(this);
+        root.addView(gap1,
+                new LinearLayout.LayoutParams(1, dp(10)));
 
         // CHART
-        GradientView chart = new GradientView();
-        chart.setBackgroundColor(card);
-        chart.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        ChartView chart = new ChartView(this);
 
         root.addView(chart,
-                new LinearLayout.LayoutParams(-1, 0, 1));
+                new LinearLayout.LayoutParams(
+                        -1, 0, 1));
 
         // BUY / SELL
         LinearLayout actions = new LinearLayout(this);
-        actions.setPadding(0, dp(12), 0, dp(12));
+        actions.setPadding(0, dp(10), 0, dp(10));
 
         Button buy = new Button(this);
         buy.setText("BUY");
         buy.setTextColor(Color.BLACK);
         buy.setTextSize(16);
-        buy.setBackgroundColor(green);
+        buy.setBackgroundColor(GREEN);
 
         Button sell = new Button(this);
         sell.setText("SELL");
         sell.setTextColor(Color.BLACK);
         sell.setTextSize(16);
-        sell.setBackgroundColor(green);
+        sell.setBackgroundColor(GREEN);
 
         actions.addView(buy,
-                new LinearLayout.LayoutParams(0, dp(55), 1));
+                new LinearLayout.LayoutParams(
+                        0, dp(55), 1));
 
-        Space gap = new Space(this);
-        actions.addView(gap,
+        Space buttonGap = new Space(this);
+        actions.addView(buttonGap,
                 new LinearLayout.LayoutParams(dp(10), 1));
 
         actions.addView(sell,
-                new LinearLayout.LayoutParams(0, dp(55), 1));
+                new LinearLayout.LayoutParams(
+                        0, dp(55), 1));
 
         root.addView(actions);
 
-        // ANDROID-STYLE BOTTOM NAVIGATION
+        // BOTTOM NAVIGATION
         LinearLayout nav = new LinearLayout(this);
         nav.setGravity(Gravity.CENTER);
-        nav.setBackgroundColor(Color.rgb(4,25,16));
+        nav.setBackgroundColor(Color.rgb(4, 25, 16));
 
-        String[] names = {"⌂\nHome", "▥\nTrade", "AI\nAI", "★\nRewards", "●\nProfile"};
+        String[] names = {
+                "⌂\nHome",
+                "▥\nTrade",
+                "AI\nAI",
+                "★\nRewards",
+                "●\nProfile"
+        };
 
-        for (String n : names) {
-            TextView item = text(n, 12);
+        for (String name : names) {
+            TextView item = label(name, 12);
             item.setGravity(Gravity.CENTER);
-            item.setPadding(0, dp(6), 0, dp(6));
             nav.addView(item,
-                    new LinearLayout.LayoutParams(0, dp(65), 1));
+                    new LinearLayout.LayoutParams(
+                            0, dp(65), 1));
         }
 
         root.addView(nav);
@@ -139,38 +152,41 @@ public class TradeActivity extends Activity {
         setContentView(root);
     }
 
-    class GradientView extends View {
-        Paint p = new Paint(1);
+    // SIMPLE TRADING CHART
+    private class ChartView extends View {
 
-        GradientView() {
-            super(TradeActivity.this);
+        private final Paint paint =
+                new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        ChartView(Activity activity) {
+            super(activity);
+            setBackgroundColor(CARD);
         }
 
         @Override
-        protected void onDraw(Canvas c) {
-            super.onDraw(c);
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
 
-            p.setColor(Color.rgb(8,110,65));
-            p.setStrokeWidth(dp(3));
-            p.setStyle(Paint.Style.STROKE);
+            paint.setColor(Color.rgb(0, 210, 115));
+            paint.setStrokeWidth(dp(3));
+            paint.setStyle(Paint.Style.STROKE);
 
             float w = getWidth();
             float h = getHeight();
 
-            android.graphics.Path path =
-                    new android.graphics.Path();
+            Path line = new Path();
 
-            path.moveTo(0, h * .72f);
-            path.lineTo(w*.12f, h*.65f);
-            path.lineTo(w*.22f, h*.70f);
-            path.lineTo(w*.34f, h*.42f);
-            path.lineTo(w*.45f, h*.53f);
-            path.lineTo(w*.57f, h*.28f);
-            path.lineTo(w*.68f, h*.40f);
-            path.lineTo(w*.80f, h*.18f);
-            path.lineTo(w, h*.30f);
+            line.moveTo(0, h * 0.72f);
+            line.lineTo(w * 0.12f, h * 0.65f);
+            line.lineTo(w * 0.23f, h * 0.70f);
+            line.lineTo(w * 0.34f, h * 0.43f);
+            line.lineTo(w * 0.46f, h * 0.53f);
+            line.lineTo(w * 0.57f, h * 0.29f);
+            line.lineTo(w * 0.69f, h * 0.40f);
+            line.lineTo(w * 0.81f, h * 0.18f);
+            line.lineTo(w, h * 0.30f);
 
-            c.drawPath(path, p);
+            canvas.drawPath(line, paint);
         }
     }
-}
+            }
