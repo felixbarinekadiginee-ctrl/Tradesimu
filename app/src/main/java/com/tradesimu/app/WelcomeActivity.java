@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.FirebaseUser;
 
 public class WelcomeActivity extends Activity {
 
@@ -45,22 +46,33 @@ public class WelcomeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
+        try {
+            mAuth = FirebaseAuth.getInstance();
 
-        GoogleSignInOptions gso =
-                new GoogleSignInOptions.Builder(
-                        GoogleSignInOptions.DEFAULT_SIGN_IN
-                )
-                .requestIdToken(
-                        getString(R.string.default_web_client_id)
-                )
-                .requestEmail()
-                .build();
+            GoogleSignInOptions gso =
+                    new GoogleSignInOptions.Builder(
+                            GoogleSignInOptions.DEFAULT_SIGN_IN
+                    )
+                    .requestIdToken(
+                            getString(R.string.default_web_client_id)
+                    )
+                    .requestEmail()
+                    .build();
 
-        googleSignInClient =
-                GoogleSignIn.getClient(this, gso);
+            googleSignInClient =
+                    GoogleSignIn.getClient(this, gso);
 
-        showWelcome();
+            showWelcome();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Toast.makeText(
+                    this,
+                    "TradeSim could not initialize. Check Firebase configuration and the build log.",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
     // =====================================
@@ -78,9 +90,10 @@ public class WelcomeActivity extends Activity {
         content.setGravity(Gravity.CENTER);
         content.setPadding(dp(28), dp(30), dp(28), dp(30));
 
-        root.addView(content, new FrameLayout.LayoutParams(
-                -1, -1
-        ));
+        root.addView(
+                content,
+                new FrameLayout.LayoutParams(-1, -1)
+        );
 
         ImageView logo = new ImageView(this);
         logo.setImageResource(R.drawable.tradesim_logo);
@@ -140,18 +153,28 @@ public class WelcomeActivity extends Activity {
 
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
+        scroll.setClipToPadding(false);
 
         content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_HORIZONTAL);
         content.setPadding(dp(28), dp(35), dp(28), dp(30));
 
-        scroll.addView(content);
+        scroll.addView(
+                content,
+                new ScrollView.LayoutParams(-1, -2)
+        );
 
-        root.addView(scroll, new FrameLayout.LayoutParams(-1, -1));
+        root.addView(
+                scroll,
+                new FrameLayout.LayoutParams(-1, -1)
+        );
 
-        TextView back = text("← Back", 17,
-                Color.rgb(180, 240, 210));
+        TextView back = text(
+                "← Back",
+                17,
+                Color.rgb(180, 240, 210)
+        );
 
         back.setGravity(Gravity.START);
         back.setPadding(0, 0, 0, dp(20));
@@ -177,6 +200,7 @@ public class WelcomeActivity extends Activity {
         content.addView(subtitle);
 
         EditText email = input("Email");
+
         email.setInputType(
                 InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
@@ -185,7 +209,9 @@ public class WelcomeActivity extends Activity {
         EditText password = passwordInput("Password");
 
         content.addView(email, inputParams());
-        content.addView(password, inputParams());
+
+        // Correctly add the password field and its SHOW/HIDE wrapper.
+        addPasswordField(password);
 
         TextView forgot = text(
                 "Forgot Password?",
@@ -206,8 +232,11 @@ public class WelcomeActivity extends Activity {
 
             if (requestInProgress) return;
 
-            String emailText = email.getText().toString().trim();
-            String passwordText = password.getText().toString();
+            String emailText =
+                    email.getText().toString().trim();
+
+            String passwordText =
+                    password.getText().toString();
 
             if (!validEmail(emailText)) {
                 email.setError("Enter a valid email address");
@@ -225,33 +254,37 @@ public class WelcomeActivity extends Activity {
             login.setEnabled(false);
             login.setText("Signing in...");
 
-            mAuth.signInWithEmailAndPassword(
-                    emailText,
-                    passwordText
-            ).addOnCompleteListener(this, task -> {
+            try {
+                mAuth.signInWithEmailAndPassword(
+                        emailText,
+                        passwordText
+                ).addOnCompleteListener(this, task -> {
+
+                    requestInProgress = false;
+                    login.setEnabled(true);
+                    login.setText("Sign In");
+
+                    if (task.isSuccessful()) {
+
+                        openIntroduction();
+
+                    } else {
+
+                        showAuthError(
+                                "Sign in failed",
+                                task.getException()
+                        );
+                    }
+                });
+
+            } catch (Exception e) {
 
                 requestInProgress = false;
                 login.setEnabled(true);
                 login.setText("Sign In");
 
-                if (task.isSuccessful()) {
-
-                    Toast.makeText(
-                            this,
-                            "Welcome back!",
-                            Toast.LENGTH_SHORT
-                    ).show();
-
-                    openIntroduction();
-
-                } else {
-
-                    showAuthError(
-                            "Sign in failed",
-                            task.getException()
-                    );
-                }
-            });
+                showAuthError("Sign in failed", e);
+            }
         });
 
         addGoogleDivider();
@@ -289,18 +322,28 @@ public class WelcomeActivity extends Activity {
 
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
+        scroll.setClipToPadding(false);
 
         content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_HORIZONTAL);
         content.setPadding(dp(28), dp(30), dp(28), dp(30));
 
-        scroll.addView(content);
+        scroll.addView(
+                content,
+                new ScrollView.LayoutParams(-1, -2)
+        );
 
-        root.addView(scroll, new FrameLayout.LayoutParams(-1, -1));
+        root.addView(
+                scroll,
+                new FrameLayout.LayoutParams(-1, -1)
+        );
 
-        TextView back = text("← Back", 17,
-                Color.rgb(180, 240, 210));
+        TextView back = text(
+                "← Back",
+                17,
+                Color.rgb(180, 240, 210)
+        );
 
         back.setGravity(Gravity.START);
         back.setPadding(0, 0, 0, dp(15));
@@ -310,7 +353,12 @@ public class WelcomeActivity extends Activity {
 
         addLogo(dp(85));
 
-        TextView title = text("Create Your Account", 27, WHITE);
+        TextView title = text(
+                "Create Your Account",
+                27,
+                WHITE
+        );
+
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         title.setGravity(Gravity.CENTER);
         content.addView(title);
@@ -328,6 +376,7 @@ public class WelcomeActivity extends Activity {
         EditText name = input("Full Name");
 
         EditText email = input("Email");
+
         email.setInputType(
                 InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
@@ -338,8 +387,10 @@ public class WelcomeActivity extends Activity {
 
         content.addView(name, inputParams());
         content.addView(email, inputParams());
-        content.addView(password, inputParams());
-        content.addView(confirm, inputParams());
+
+        // Correctly add both password wrappers.
+        addPasswordField(password);
+        addPasswordField(confirm);
 
         TextView passwordHint = text(
                 "Use at least 6 characters for your password.",
@@ -357,10 +408,17 @@ public class WelcomeActivity extends Activity {
 
             if (requestInProgress) return;
 
-            String nameText = name.getText().toString().trim();
-            String emailText = email.getText().toString().trim();
-            String passwordText = password.getText().toString();
-            String confirmText = confirm.getText().toString();
+            String nameText =
+                    name.getText().toString().trim();
+
+            String emailText =
+                    email.getText().toString().trim();
+
+            String passwordText =
+                    password.getText().toString();
+
+            String confirmText =
+                    confirm.getText().toString();
 
             if (nameText.isEmpty()) {
                 name.setError("Enter your full name");
@@ -392,33 +450,50 @@ public class WelcomeActivity extends Activity {
             signUp.setEnabled(false);
             signUp.setText("Creating account...");
 
-            mAuth.createUserWithEmailAndPassword(
-                    emailText,
-                    passwordText
-            ).addOnCompleteListener(this, task -> {
+            try {
+                mAuth.createUserWithEmailAndPassword(
+                        emailText,
+                        passwordText
+                ).addOnCompleteListener(this, task -> {
+
+                    requestInProgress = false;
+                    signUp.setEnabled(true);
+                    signUp.setText("Create Account");
+
+                    if (task.isSuccessful()) {
+
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                        if (user != null) {
+                            com.google.firebase.auth.UserProfileChangeRequest
+                                    profileUpdates =
+                                    new com.google.firebase.auth
+                                            .UserProfileChangeRequest.Builder()
+                                            .setDisplayName(nameText)
+                                            .build();
+
+                            user.updateProfile(profileUpdates);
+                        }
+
+                        openIntroduction();
+
+                    } else {
+
+                        showAuthError(
+                                "Account creation failed",
+                                task.getException()
+                        );
+                    }
+                });
+
+            } catch (Exception e) {
 
                 requestInProgress = false;
                 signUp.setEnabled(true);
                 signUp.setText("Create Account");
 
-                if (task.isSuccessful()) {
-
-                    Toast.makeText(
-                            this,
-                            "Account created successfully!",
-                            Toast.LENGTH_SHORT
-                    ).show();
-
-                    openIntroduction();
-
-                } else {
-
-                    showAuthError(
-                            "Account creation failed",
-                            task.getException()
-                    );
-                }
-            });
+                showAuthError("Account creation failed", e);
+            }
         });
 
         addGoogleDivider();
@@ -450,35 +525,41 @@ public class WelcomeActivity extends Activity {
 
     private void sendPasswordReset(EditText emailField) {
 
-        String emailText = emailField.getText().toString().trim();
+        String emailText =
+                emailField.getText().toString().trim();
 
         if (!validEmail(emailText)) {
             emailField.setError(
-                    "Enter your email address first"
+                    "Enter a valid email address first"
             );
             emailField.requestFocus();
             return;
         }
 
-        mAuth.sendPasswordResetEmail(emailText)
-                .addOnCompleteListener(this, task -> {
+        try {
+            mAuth.sendPasswordResetEmail(emailText)
+                    .addOnCompleteListener(this, task -> {
 
-                    if (task.isSuccessful()) {
+                        if (task.isSuccessful()) {
 
-                        Toast.makeText(
-                                this,
-                                "If the account exists, a password reset email will be sent.",
-                                Toast.LENGTH_LONG
-                        ).show();
+                            Toast.makeText(
+                                    this,
+                                    "If the account exists, a password reset email will be sent.",
+                                    Toast.LENGTH_LONG
+                            ).show();
 
-                    } else {
+                        } else {
 
-                        showAuthError(
-                                "Could not request password reset",
-                                task.getException()
-                        );
-                    }
-                });
+                            showAuthError(
+                                    "Could not request password reset",
+                                    task.getException()
+                            );
+                        }
+                    });
+
+        } catch (Exception e) {
+            showAuthError("Password reset failed", e);
+        }
     }
 
     // =====================================
@@ -494,12 +575,13 @@ public class WelcomeActivity extends Activity {
                     googleSignInClient.getSignInIntent(),
                     RC_GOOGLE_SIGN_IN
             );
+
         } catch (Exception e) {
-            Toast.makeText(
-                    this,
-                    "Unable to start Google Sign-In. Check your configuration.",
-                    Toast.LENGTH_LONG
-            ).show();
+
+            showAuthError(
+                    "Unable to start Google Sign-In. Check your configuration",
+                    e
+            );
         }
     }
 
@@ -526,16 +608,17 @@ public class WelcomeActivity extends Activity {
                 GoogleSignIn.getSignedInAccountFromIntent(data);
 
         try {
-
             GoogleSignInAccount account =
                     task.getResult(ApiException.class);
 
             if (account == null || account.getIdToken() == null) {
+
                 Toast.makeText(
                         this,
                         "Google Sign-In did not return an ID token. Check Firebase configuration.",
                         Toast.LENGTH_LONG
                 ).show();
+
                 return;
             }
 
@@ -549,17 +632,8 @@ public class WelcomeActivity extends Activity {
                     .addOnCompleteListener(this, authTask -> {
 
                         if (authTask.isSuccessful()) {
-
-                            Toast.makeText(
-                                    this,
-                                    "Google Sign-In successful!",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-
                             openIntroduction();
-
                         } else {
-
                             showAuthError(
                                     "Google authentication failed",
                                     authTask.getException()
@@ -575,9 +649,11 @@ public class WelcomeActivity extends Activity {
                 case 12501:
                     message = "Google Sign-In cancelled.";
                     break;
+
                 case 10:
                     message = "Google Sign-In configuration error. Check the SHA certificate and Web client ID in Firebase.";
                     break;
+
                 default:
                     message = "Google Sign-In failed. Error code: "
                             + e.getStatusCode();
@@ -593,7 +669,7 @@ public class WelcomeActivity extends Activity {
     }
 
     // =====================================
-    // PASSWORD INPUT WITH SHOW/HIDE BUTTON
+    // PASSWORD INPUT WITH SHOW/HIDE
     // =====================================
 
     private EditText passwordInput(String hint) {
@@ -615,10 +691,13 @@ public class WelcomeActivity extends Activity {
         field.setTextColor(Color.WHITE);
         field.setTextSize(16);
         field.setSingleLine(true);
+
+        // Passwords start hidden.
         field.setInputType(
                 InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD
         );
+
         field.setBackgroundColor(Color.TRANSPARENT);
         field.setPadding(dp(16), dp(10), dp(4), dp(10));
         field.setSelectAllOnFocus(false);
@@ -635,36 +714,29 @@ public class WelcomeActivity extends Activity {
 
         wrapper.addView(
                 toggle,
-                new LinearLayout.LayoutParams(
-                        -2,
-                        -1
-                )
+                new LinearLayout.LayoutParams(-2, -1)
         );
 
         toggle.setOnClickListener(v -> {
 
             int position = field.getSelectionStart();
 
-            boolean currentlyHidden =
+            boolean hidden =
                     (field.getInputType()
                     & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0;
 
-            if (currentlyHidden) {
-
+            if (hidden) {
                 field.setInputType(
                         InputType.TYPE_CLASS_TEXT |
                         InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 );
-
                 toggle.setText("HIDE");
 
             } else {
-
                 field.setInputType(
                         InputType.TYPE_CLASS_TEXT |
                         InputType.TYPE_TEXT_VARIATION_PASSWORD
                 );
-
                 toggle.setText("SHOW");
             }
 
@@ -677,25 +749,26 @@ public class WelcomeActivity extends Activity {
             }
         });
 
-        // Keep the password hidden by default.
-        // Return the EditText itself with the visibility control attached
-        // through its parent container.
-
+        // Keep the wrapper attached to the EditText for safe insertion.
         field.setTag(wrapper);
 
         return field;
     }
 
-    /*
-     * Adds password inputs with their SHOW/HIDE controls.
-     * Used by the login and registration screens.
-     */
-
     private void addPasswordField(EditText field) {
-        View wrapper = (View) field.getTag();
 
-        if (wrapper != null) {
+        Object tag = field.getTag();
+
+        if (tag instanceof View) {
+            View wrapper = (View) tag;
+
+            // Add the wrapper, not its already-attached EditText child.
             content.addView(wrapper, inputParams());
+
+        } else {
+            throw new IllegalStateException(
+                    "Password field wrapper was not created."
+            );
         }
     }
 
@@ -716,11 +789,10 @@ public class WelcomeActivity extends Activity {
 
         } catch (Exception e) {
 
-            Toast.makeText(
-                    this,
-                    "Authentication succeeded, but the introduction screen could not open.",
-                    Toast.LENGTH_LONG
-            ).show();
+            showAuthError(
+                    "Authentication succeeded, but the introduction screen could not open",
+                    e
+            );
         }
     }
 
@@ -743,7 +815,6 @@ public class WelcomeActivity extends Activity {
 
         if (exception != null &&
                 exception.getMessage() != null) {
-
             message += "\n" + exception.getMessage();
         }
 
@@ -787,22 +858,31 @@ public class WelcomeActivity extends Activity {
                 .setInterpolator(new DecelerateInterpolator())
                 .start();
 
-        logo.animate()
-                .setStartDelay(700)
-                .scaleX(1.04f)
-                .scaleY(1.04f)
-                .setDuration(1200)
-                .withEndAction(() -> {
+        logo.postDelayed(() -> {
 
-                    if (!isFinishing()) {
-                        logo.animate()
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .setDuration(1200)
-                                .start();
-                    }
-                })
-                .start();
+            if (isFinishing() || logo.getParent() == null) {
+                return;
+            }
+
+            logo.animate()
+                    .scaleX(1.04f)
+                    .scaleY(1.04f)
+                    .setDuration(1200)
+                    .withEndAction(() -> {
+
+                        if (!isFinishing() &&
+                                logo.getParent() != null) {
+
+                            logo.animate()
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(1200)
+                                    .start();
+                        }
+                    })
+                    .start();
+
+        }, 700);
     }
 
     private void animateEntrance(View view, long delay) {
@@ -820,7 +900,9 @@ public class WelcomeActivity extends Activity {
     }
 
     private void animateScreen(View view) {
+
         view.setAlpha(0f);
+
         view.animate()
                 .alpha(1f)
                 .setDuration(350)
@@ -847,7 +929,8 @@ public class WelcomeActivity extends Activity {
 
         frame.setBackground(gradient);
 
-        TradingBackground chart = new TradingBackground(this);
+        TradingBackground chart =
+                new TradingBackground(this);
 
         frame.addView(
                 chart,
@@ -912,180 +995,4 @@ public class WelcomeActivity extends Activity {
         button.setMinHeight(dp(56));
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.rgb(8, 35, 25));
-        bg.setCornerRadius(dp(30));
-        bg.setStroke(dp(2), GREEN);
-
-        button.setBackground(bg);
-
-        return button;
-    }
-
-    private Button googleButton(String value) {
-
-        Button button = new Button(this);
-        button.setText("G   " + value);
-        button.setTextSize(16);
-        button.setTextColor(Color.WHITE);
-        button.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        button.setAllCaps(false);
-        button.setMinHeight(dp(56));
-
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.rgb(15, 48, 35));
-        bg.setCornerRadius(dp(30));
-        bg.setStroke(dp(1), Color.rgb(100, 160, 125));
-
-        button.setBackground(bg);
-
-        return button;
-    }
-
-    // =====================================
-    // TEXT AND INPUTS
-    // =====================================
-
-    private TextView text(String value, float size, int color) {
-
-        TextView view = new TextView(this);
-        view.setText(value);
-        view.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-        view.setTextColor(color);
-        view.setIncludeFontPadding(true);
-
-        return view;
-    }
-
-    private EditText input(String hint) {
-
-        EditText editText = new EditText(this);
-
-        editText.setHint(hint);
-        editText.setHintTextColor(Color.rgb(150, 190, 170));
-        editText.setTextColor(Color.WHITE);
-        editText.setTextSize(16);
-        editText.setSingleLine(true);
-        editText.setPadding(dp(18), dp(12), dp(18), dp(12));
-
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.rgb(8, 42, 30));
-        background.setCornerRadius(dp(16));
-        background.setStroke(dp(1), Color.rgb(0, 150, 85));
-
-        editText.setBackground(background);
-
-        return editText;
-    }
-
-    private LinearLayout.LayoutParams inputParams() {
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(-1, dp(58));
-
-        params.setMargins(0, 0, 0, dp(13));
-
-        return params;
-    }
-
-    private LinearLayout.LayoutParams buttonParams() {
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(-1, dp(58));
-
-        params.setMargins(0, 0, 0, dp(14));
-
-        return params;
-    }
-
-    private LinearLayout.LayoutParams matchParams() {
-        return new LinearLayout.LayoutParams(-1, -2);
-    }
-
-    private int dp(int value) {
-        return (int) (
-                value *
-                getResources().getDisplayMetrics().density
-                + 0.5f
-        );
-    }
-
-    // =====================================
-    // ANIMATED TRADING BACKGROUND
-    // =====================================
-
-    private static class TradingBackground extends View {
-
-        private final Paint paint =
-                new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        private final Path path = new Path();
-
-        private float offset = 0f;
-        private ValueAnimator animator;
-
-        public TradingBackground(Context context) {
-            super(context);
-
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(2);
-            paint.setColor(Color.argb(45, 0, 255, 130));
-
-            animator = ValueAnimator.ofFloat(0f, 1000f);
-            animator.setDuration(8000);
-            animator.setRepeatCount(ValueAnimator.INFINITE);
-            animator.setInterpolator(new LinearInterpolator());
-
-            animator.addUpdateListener(animation -> {
-                offset = (float) animation.getAnimatedValue();
-                invalidate();
-            });
-
-            animator.start();
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-
-            super.onDraw(canvas);
-
-            float width = getWidth();
-            float height = getHeight();
-
-            path.reset();
-
-            float startX = -200 + (offset % 200);
-
-            for (int i = 0; i < 14; i++) {
-
-                float x = startX + i * (width / 8f);
-
-                float y =
-                        height * 0.72f
-                        - (float) Math.sin(i * 0.9 + offset * 0.01)
-                        * height * 0.08f
-                        - i * height * 0.018f;
-
-                if (i == 0) {
-                    path.moveTo(x, y);
-                } else {
-                    path.lineTo(x, y);
-                }
-            }
-
-            paint.setStrokeWidth(2);
-            canvas.drawPath(path, paint);
-
-            paint.setStrokeWidth(1);
-
-            for (int i = 1; i < 7; i++) {
-                float y = height * i / 7f;
-                canvas.drawLine(0, y, width, y, paint);
-            }
-
-            for (int i = 1; i < 5; i++) {
-                float x = width * i / 5f;
-                canvas.drawLine(x, 0, x, height, paint);
-            }
-        }
-    }
-            }
+        bg.setColor(Color.rgb(8, 
